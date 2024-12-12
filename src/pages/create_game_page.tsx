@@ -50,7 +50,6 @@ export function CreateGamePage({ onBackToMenu, onStartGame }: CreateGamePageProp
             const generatedSeed = randomNumber.toString().padEnd(6, '-');
             currentSeed = generatedSeed;
         }
-        console.log(`Game Seed ${currentSeed}`);
         const random = seedrandom(currentSeed);
 
         // Playing cards

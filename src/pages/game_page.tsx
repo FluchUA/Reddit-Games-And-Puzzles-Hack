@@ -1,4 +1,4 @@
-import { Devvit, useState } from '@devvit/public-api';
+import { Devvit, useState, useInterval } from '@devvit/public-api';
 
 import { PlayingCard } from '../models/PlayingCard.js';
 import { CardRank } from '../enums/CardRank.js';
@@ -17,186 +17,192 @@ export function GamePage({ cards, onBackToMenu }: GamePageProps) {
     const [foundationCells, setFoundationCells] = useState<(PlayingCard | null)[]>(Array(4).fill(null)); // 4 Foundation cells
     const [selectedCards, setSelectedCards] = useState<PlayingCard[]>([]);
 
-    function calculateMaxMovableCards() {
-        let freeCellsNumber = freeCells.filter(cell => cell == null).length;
-        let emptyCascades = columns.filter(column => column.length == 0).length;
-        setSupermoves(Math.pow(2, emptyCascades) * (freeCellsNumber + 1));
+    function getMaxMovableCards(freeCellList: (PlayingCard | null)[], columnList: PlayingCard[][]): number {
+        let freeCellsNumber = freeCellList.filter(cell => cell == null).length;
+        let emptyCascades = columnList.filter(column => column.length == 0).length;
+
+        // TODO: check win/lose
+
+        return Math.pow(2, emptyCascades) * (freeCellsNumber + 1);
     }
 
-    const unselectColumnByIndex = (index: number) => {
-        for (const card of columns[index]) {
+    function unselectColumnByIndex(index: number): PlayingCard[][] {
+        const updatedColumns = [...columns];
+        for (const card of updatedColumns[index]) {
             card.isSelected = false;
             card.columnPosition = -1;
         }
-        setColumns(columns);
+
+        return updatedColumns;
     }
 
-    const unselectFreeCells = () => {
-        for (const card of freeCells) {
+    function unselectFreeCells(): (PlayingCard | null)[] {
+        const updatedCells = [...freeCells];
+        for (const card of updatedCells) {
             if (card != null) {
                 card.isSelected = false;
                 card.columnPosition = -1;
             }
         }
-        setFreeCells(freeCells);
+
+        return updatedCells;
     }
 
-    const moveCardInFreeCellsByIndex = (index: number) => {
-        selectedCards[0].isSelected = false;
-        setFreeCells((prev) => {
-            const updatedList = [...prev];
-            const cardIndex = updatedList.findIndex(card => card?.rank == selectedCards[0].rank && card?.suit == selectedCards[0].suit);
-            if (cardIndex != -1) {
-                updatedList.splice(cardIndex, 1);
-                updatedList.splice(index, 0, selectedCards[0]);
-            }
+    function moveCardInFreeCellsByIndex(index: number, selectedCard: PlayingCard): (PlayingCard | null)[] {
+        const updatedCells = [...freeCells];
+        const cardIndex = updatedCells.findIndex(card => card?.rank == selectedCard.rank && card?.suit == selectedCard.suit);
+        if (cardIndex != -1) {
+            updatedCells.splice(cardIndex, 1);
+            updatedCells.splice(index, 0, selectedCard);
+        }
 
-            return updatedList;
-        });
+        return updatedCells;
     }
 
-    const removeCardFromFreeCells = (selectedCard: PlayingCard) => {
-        selectedCard.isInFreeCell = false;
-        selectedCard.isSelected = false;
-        setFreeCells((prev) => {
-            const updatedList = [...prev];
-            const cardIndex = updatedList.findIndex(card => card?.rank == selectedCard.rank && card?.suit == selectedCard.suit);
-            if (cardIndex != -1) {
-                updatedList[cardIndex] = null;
-            }
+    function removeCardFromFreeCells(selectedCard: PlayingCard): (PlayingCard | null)[] {
+        const updatedCells = [...freeCells];
+        const cardIndex = updatedCells.findIndex(card => card?.rank == selectedCard.rank && card?.suit == selectedCard.suit);
+        if (cardIndex != -1) {
+            updatedCells[cardIndex] = null;
+        }
 
-            return updatedList;
-        });
+        return updatedCells;
     }
 
     const unselectSelectedCards = () => {
         if (selectedCards.length > 0) {
             let columnIndex = selectedCards[0].columnPosition;
             if (columnIndex >= 0) {
-                unselectColumnByIndex(columnIndex);
+                setColumns(unselectColumnByIndex(columnIndex));
                 setSelectedCards([]);
             } else {
-                unselectFreeCells();
+                setFreeCells(unselectFreeCells());
                 setSelectedCards([]);
             }
         }
     }
 
-    const addToSelectedCard = (card: PlayingCard) => {
-        card.isSelected = true;
-        setSelectedCards((prev) => {
-            let newList = [...prev];
-            newList.push(card);
-            return newList;
-        });
+    function cutColumnByIndex(index: number, size: number): PlayingCard[][] {
+        const updatedColumns = [...columns];
+        updatedColumns[index] = updatedColumns[index].slice(0, -size);
+
+        return updatedColumns;
     }
 
-    const replaceFreeCellByIndex = (index: number) => {
-        selectedCards[0].isSelected = false;
-        setFreeCells((prev) => {
-            const updatedList = [...prev];
-            updatedList.splice(index, 1, selectedCards[0]);
-            return updatedList;
-        });
-        columns[selectedCards[0].columnPosition] = columns[selectedCards[0].columnPosition].slice(0, -selectedCards.length);
+    function addToSelectedCard(card: PlayingCard): PlayingCard[] {
+        let newList = [...selectedCards];
+        newList = [...newList, card];
+
+        return newList;
     }
 
-    const replaceFoundationCellByIndex = (index: number) => {
-        selectedCards[0].isSelected = false;
-        setFoundationCells((prev) => {
-            const updatedList = [...prev];
-            updatedList.splice(index, 1, selectedCards[0]);
-            return updatedList;
-        });
-        columns[selectedCards[0].columnPosition] = columns[selectedCards[0].columnPosition].slice(0, -selectedCards.length);
+    function replaceFreeCellByIndex(index: number, selectedCard: PlayingCard): (PlayingCard | null)[] {
+        const updatedList = [...freeCells];
+        updatedList.splice(index, 1, selectedCard);
+
+        return updatedList;
+    }
+
+    const replaceFoundationCellByIndex = (index: number, selectedCard: PlayingCard) => {
+        const updatedList = [...foundationCells];
+        updatedList.splice(index, 1, selectedCard);
+
+        return updatedList;
     }
 
     // Handling clicks on card columns
     const handleColumnClick = (index: number) => {
+        const updatedColumns = [...columns];
+
+        if (selectedCards.length == 0 && updatedColumns[index].length == 0) {
+            return;
+        }
+
         // If there are no selected cards - select the current one
         if (selectedCards.length == 0) {
-            const currentCard = columns[index][columns[index].length - 1];
+            const currentCard = updatedColumns[index][updatedColumns[index].length - 1];
             currentCard.columnPosition = index;
             currentCard.isSelected = !currentCard.isSelected;
             setSelectedCards([currentCard]);
-            setColumns(columns);
+            setColumns(updatedColumns);
         } else {
+            const selectedCard = selectedCards[0];
+
             //  When clicking again on the column with the selected card
-            if (index == selectedCards[0].columnPosition) {
+            if (index == selectedCard.columnPosition) {
                 // If the number of selected cards is less than or equal to the number of super moves
-                if (selectedCards.length <= supermoves) {
-                    let nextCardIndex = columns[index].length - selectedCards.length - 1;
+                if (selectedCards.length < supermoves) {
+                    let nextCardIndex = updatedColumns[index].length - selectedCards.length - 1;
+
                     if (nextCardIndex >= 0) {
-                        let nextCard = columns[index][nextCardIndex];
+                        let nextCard = updatedColumns[index][nextCardIndex];
                         let lastSelectedCard = selectedCards[selectedCards.length - 1];
 
                         // Select the next card if it has a different color and its rank is 1 more than the currently selected one.
                         if (nextCard.isRed != lastSelectedCard.isRed
                             && Number(nextCard.rank) == Number(lastSelectedCard.rank) + 1) {
-                            addToSelectedCard(nextCard);
-                            setColumns(columns);
+
+                            nextCard.isSelected = true;
+                            setSelectedCards(addToSelectedCard(nextCard));
+                            setColumns(updatedColumns);
                         } else {
+                            setColumns(unselectColumnByIndex(index));
                             setSelectedCards([]);
-                            unselectColumnByIndex(index);
                         }
+                    } else {
+                        setColumns(unselectColumnByIndex(index));
+                        setSelectedCards([]);
                     }
                 } else {
+                    setColumns(unselectColumnByIndex(index));
                     setSelectedCards([]);
-                    unselectColumnByIndex(index);
                 }
 
-                // If the selected card from a free cell
-            } else if (selectedCards[0].isInFreeCell) {
-                const currentColumnCard = columns[index][columns[index].length - 1];
-                const selectedCard = selectedCards[0];
-
-                // When clicking on a column from a free cell, move the card if the first of them 
-                // has a different color and its rank is 1 more than the currently selected one.
-                if (currentColumnCard.isRed != selectedCard.isRed
-                    && Number(currentColumnCard.rank) == Number(selectedCard.rank) + 1) {
-
-                    removeCardFromFreeCells(selectedCard);
-                    columns[index].push(selectedCard);
-
-                    setSelectedCards([]);
-                    setColumns(columns);
-                    calculateMaxMovableCards();
-                } else {
-                    unselectSelectedCards();
-                }
-
-                // If the selected card is from another column
+                // If another column was clicked
             } else {
-                const currentColumnCard = columns[index][columns[index].length - 1];
                 let lastSelectedCard = selectedCards[selectedCards.length - 1];
 
                 // When clicking on another column, move the selected cards if the first of them 
                 // has a different color and its rank is 1 more than the currently selected one.
-                if ((currentColumnCard.isRed != lastSelectedCard.isRed
-                    && Number(currentColumnCard.rank) == Number(lastSelectedCard.rank) + 1) || columns[index].length == 0) {
+                if ((updatedColumns[index].length > 1
+                    && updatedColumns[index][updatedColumns[index].length - 1].isRed != lastSelectedCard.isRed
+                    && Number(updatedColumns[index][updatedColumns[index].length - 1].rank) == Number(lastSelectedCard.rank) + 1)
+                    || updatedColumns[index].length == 0) {
 
-                    for (const card of columns[index]) {
-                        card.isSelected = false;
+                    // If the selected card from a free cell
+                    if (selectedCard.isInFreeCell) {
+                        selectedCard.isSelected = false;
+                        selectedCard.isInFreeCell = false;
+                        updatedColumns[index] = [...updatedColumns[index], selectedCard];
+                        let updatedFreeCells = removeCardFromFreeCells(selectedCard);
+
+                        setFreeCells(updatedFreeCells);
+                        setColumns(updatedColumns);
+                        setSelectedCards([]);
+                        setSupermoves(getMaxMovableCards(updatedFreeCells, updatedColumns));
+
+                        // If the selected cards are from another column
+                    } else {
+                        for (const card of updatedColumns[index]) {
+                            card.isSelected = false;
+                        }
+                        for (const card of updatedColumns[selectedCard.columnPosition]) {
+                            card.isSelected = false;
+                        }
+
+                        let movedCards = updatedColumns[selectedCard.columnPosition].slice(-selectedCards.length);
+                        for (const card of movedCards) {
+                            card.dustAnimationState = 3;
+                        }
+                        updatedColumns[selectedCard.columnPosition] = updatedColumns[selectedCard.columnPosition].slice(0, -selectedCards.length);
+                        updatedColumns[index] = [...updatedColumns[index], ...movedCards];
+
+                        setColumns(updatedColumns);
+                        setSelectedCards([]);
+                        setSupermoves(getMaxMovableCards(freeCells, updatedColumns));
                     }
-                    for (const card of columns[selectedCards[0].columnPosition]) {
-                        card.isSelected = false;
-                    }
-
-                    let movedCards = columns[selectedCards[0].columnPosition].slice(-selectedCards.length);
-                    for (const card of movedCards) {
-                        card.dustAnimationState = 3;
-                    }
-
-                    columns[selectedCards[0].columnPosition] = columns[selectedCards[0].columnPosition].slice(0, -selectedCards.length);
-                    columns[index].push(...movedCards);
-
-                    setSelectedCards([]);
-                    setColumns(columns);
-                    calculateMaxMovableCards();
                 } else {
-                    let columnIndex = selectedCards[0].columnPosition
-                    setSelectedCards([]);
-                    unselectColumnByIndex(columnIndex);
+                    unselectSelectedCards();
                 }
             }
         }
@@ -205,19 +211,26 @@ export function GamePage({ cards, onBackToMenu }: GamePageProps) {
     // Handling clicking on empty cells
     const handleFreeCellClick = (index: number) => {
         if (selectedCards.length == 1) {
+            const selectedCard = selectedCards[0];
+
             // If the chosen card is not an ace
-            if (selectedCards[0].rank != CardRank.Ace) {
+            if (selectedCard.rank != CardRank.Ace) {
                 // If the cell is empty
                 if (freeCells[index] == null) {
+                    selectedCard.isSelected = false;
+
                     // If the card was selected from a free cell
-                    if (selectedCards[0].isInFreeCell) {
-                        moveCardInFreeCellsByIndex(index);
+                    if (selectedCard.isInFreeCell) {
+                        setFreeCells(moveCardInFreeCellsByIndex(index, selectedCard));
                         setSelectedCards([]);
                     } else {
-                        replaceFreeCellByIndex(index);
+                        let updatedFreeCells = replaceFreeCellByIndex(index, selectedCard);
+                        let updatedColumns = cutColumnByIndex(selectedCard.columnPosition, 1);
+
+                        setFreeCells(updatedFreeCells);
+                        setColumns(updatedColumns);
                         setSelectedCards([]);
-                        setColumns(columns);
-                        calculateMaxMovableCards();
+                        setSupermoves(getMaxMovableCards(updatedFreeCells, updatedColumns));
                     }
                 } else {
                     unselectSelectedCards();
@@ -229,37 +242,59 @@ export function GamePage({ cards, onBackToMenu }: GamePageProps) {
             unselectSelectedCards();
             // Select a card blank from a free cell
         } else if (freeCells[index] != null) {
+
             let freeCellCard = freeCells[index];
             freeCellCard.isInFreeCell = true;
-            addToSelectedCard(freeCellCard);
+            freeCellCard.isSelected = true;
+            freeCellCard.columnPosition = -1;
+            setSelectedCards(addToSelectedCard(freeCellCard));
         }
     };
 
     // Handling clicking on foundation cells
     const handleFoundationCellClick = (index: number) => {
         if (selectedCards.length == 1) {
+            const selectedCard = selectedCards[0];
+
             // If the cell is empty
             if (foundationCells[index] == null) {
                 // If the chosen card is an ace
-                if (selectedCards[0].rank == CardRank.Ace) {
-                    replaceFoundationCellByIndex(index);
+                if (selectedCard.rank == CardRank.Ace) {
+                    selectedCard.isSelected = false;
+
+                    let updatedColumns = cutColumnByIndex(selectedCard.columnPosition, 1);
+                    setFoundationCells(replaceFoundationCellByIndex(index, selectedCard));
+                    setColumns(updatedColumns);
                     setSelectedCards([]);
-                    setColumns(columns);
-                    calculateMaxMovableCards();
+                    setSupermoves(getMaxMovableCards(freeCells, updatedColumns));
                 } else {
                     unselectSelectedCards();
                 }
 
                 // If the selected cell is not empty, the selected card has the same suit 
                 // and its rank is 1 higher than the card in the selected cell
-            } else if (selectedCards[0].suit == foundationCells[index].suit) {
-                if (foundationCells[index].rank == CardRank.Ace && selectedCards[0].rank == CardRank.Two
-                    || Number(foundationCells[index].rank) + 1 == Number(selectedCards[0].rank)
+            } else if (selectedCard.suit == foundationCells[index].suit) {
+                if (foundationCells[index].rank == CardRank.Ace && selectedCard.rank == CardRank.Two
+                    || Number(foundationCells[index].rank) + 1 == Number(selectedCard.rank)
                 ) {
-                    replaceFoundationCellByIndex(index);
-                    setSelectedCards([]);
-                    setColumns(columns);
-                    calculateMaxMovableCards();
+                    selectedCard.isSelected = false;
+
+                    // If the selected card from a free cell
+                    if (selectedCard.isInFreeCell) {
+                        selectedCard.isInFreeCell = false;
+
+                        let updatedFreeCells = removeCardFromFreeCells(selectedCard);
+                        setFoundationCells(replaceFoundationCellByIndex(index, selectedCard));
+                        setFreeCells(updatedFreeCells);
+                        setSelectedCards([]);
+                        setSupermoves(getMaxMovableCards(updatedFreeCells, columns));
+                    } else {
+                        let updatedColumns = cutColumnByIndex(selectedCard.columnPosition, 1);
+                        setFoundationCells(replaceFoundationCellByIndex(index, selectedCard));
+                        setColumns(updatedColumns);
+                        setSelectedCards([]);
+                        setSupermoves(getMaxMovableCards(freeCells, updatedColumns));
+                    }
                 } else {
                     unselectSelectedCards();
                 }
