@@ -1,16 +1,29 @@
-import { Devvit, useState, useInterval } from '@devvit/public-api';
+import { Devvit, useState } from '@devvit/public-api';
 
 import { PlayingCard } from '../models/PlayingCard.js';
 import { CardRank } from '../enums/CardRank.js';
+import { GameStatus } from '../enums/GameStatus.js';
 import { PlayingCardComponent } from '../components/PlayingCardComponent.js';
 import { CallComponent } from '../components/CellComponent.js';
+import { TimerComponent } from '../components/TimerComponent.js';
+import { RulesDialogComponent } from '../components/RulesDialogComponent.js';
+import { StopGameDialogComponent } from '../components/StopGameDialogComponent.js';
+import { DefeatDialogComponent } from '../components/DefeatDialogComponent.js';
+import { VictoryDialogComponent } from '../components/VictoryDialogComponent.js';
+
+const BUTTON_SIZE = "40px";
+const TEXT_WIDTH = "100px";
 
 interface GamePageProps {
+    gameSeed: string;
     cards: PlayingCard[][];
     onBackToMenu: () => void;
 }
 
-export function GamePage({ cards, onBackToMenu }: GamePageProps) {
+export function GamePage({ gameSeed, cards, onBackToMenu }: GamePageProps) {
+    const [isRulesShow, setIsRulesShow] = useState<boolean>(false);
+    const [isStopDialogShow, setStopDialogShow] = useState<boolean>(false);
+    const [isEndGame, setIsGameEnd] = useState<GameStatus>(GameStatus.InProgress);
     const [supermoves, setSupermoves] = useState<number>(5);
     const [columns, setColumns] = useState<PlayingCard[][]>(cards);
     const [freeCells, setFreeCells] = useState<(PlayingCard | null)[]>(Array(4).fill(null)); // 4 Empty cells
@@ -21,7 +34,7 @@ export function GamePage({ cards, onBackToMenu }: GamePageProps) {
         let freeCellsNumber = freeCellList.filter(cell => cell == null).length;
         let emptyCascades = columnList.filter(column => column.length == 0).length;
 
-        // TODO: check win/lose
+        endGameCheck(freeCellList, foundationCells, columnList, freeCellsNumber, emptyCascades);
 
         return Math.pow(2, emptyCascades) * (freeCellsNumber + 1);
     }
@@ -164,7 +177,7 @@ export function GamePage({ cards, onBackToMenu }: GamePageProps) {
 
                 // When clicking on another column, move the selected cards if the first of them 
                 // has a different color and its rank is 1 more than the currently selected one.
-                if ((updatedColumns[index].length > 1
+                if ((updatedColumns[index].length > 0
                     && updatedColumns[index][updatedColumns[index].length - 1].isRed != lastSelectedCard.isRed
                     && Number(updatedColumns[index][updatedColumns[index].length - 1].rank) == Number(lastSelectedCard.rank) + 1)
                     || updatedColumns[index].length == 0) {
@@ -183,9 +196,6 @@ export function GamePage({ cards, onBackToMenu }: GamePageProps) {
 
                         // If the selected cards are from another column
                     } else {
-                        for (const card of updatedColumns[index]) {
-                            card.isSelected = false;
-                        }
                         for (const card of updatedColumns[selectedCard.columnPosition]) {
                             card.isSelected = false;
                         }
@@ -306,37 +316,151 @@ export function GamePage({ cards, onBackToMenu }: GamePageProps) {
         }
     };
 
+    function endGameCheck(freeCellList: (PlayingCard | null)[], foundationCellsList: (PlayingCard | null)[], columnList: PlayingCard[][], freeCellsNumber: number, emptyCascades: number) {
+        /// Сheck victory
+        let isOrganized = true;
+        for (const deck of columnList) {
+            if (deck.length == 0) {
+                continue;
+            }
+
+            // Checking to make sure all the stacks are organized
+            for (let i = 0; i < deck.length - 1; i++) {
+                if (Number(deck[i].rank) < Number(deck[i + 1].rank)) {
+                    isOrganized = false;
+                    break;
+                }
+            }
+
+            if (!isOrganized) {
+                break;
+            }
+        }
+
+        if (isOrganized) {
+            setIsGameEnd(GameStatus.Victory);
+            return;
+        }
+
+        /// Check defeat
+        /// If there are no free places
+        if (freeCellsNumber == 0 && emptyCascades == 0) {
+            for (const freeCellCard of freeCellList) {
+                if (freeCellCard != null) {
+                    /// Checking for an ace
+                    /// Check if something can be put in the foundation
+                    if (freeCellCard.rank == CardRank.Ace || checkingPossibleMoveInFoundation(freeCellCard, foundationCellsList)) {
+                        return;
+                    }
+
+                    /// Check if a free cell can be released
+                    for (const columnCard of columnList) {
+                        let lastColumnCard = columnCard[columnCard.length - 1];
+                        if (Number(freeCellCard.rank) + 1 == Number(lastColumnCard.rank) &&
+                            freeCellCard.isRed != lastColumnCard.isRed) {
+                            return;
+                        }
+                    }
+                }
+            }
+            for (const columnCard of columnList) {
+                let lastColumnCard = columnCard[columnCard.length - 1];
+                /// Checking for an ace
+                /// Check if something can be put in the foundation
+                if (lastColumnCard.rank == CardRank.Ace || checkingPossibleMoveInFoundation(lastColumnCard, foundationCellsList)) {
+                    return;
+                }
+
+                /// Check if it is possible to move cards from column to column
+                for (const card of columnList) {
+                    let lastCard = card[card.length - 1];
+                    if (Number(lastCard.rank) == Number(lastColumnCard.rank) + 1 &&
+                        lastCard.isRed != lastColumnCard.isRed) {
+                        return;
+                    }
+                }
+            }
+
+            setIsGameEnd(GameStatus.Defeat);
+        }
+    }
+
+    function checkingPossibleMoveInFoundation(card: PlayingCard, foundationCellsList: (PlayingCard | null)[]): boolean {
+        for (const foundationCellsCard of foundationCellsList) {
+            if (foundationCellsCard != null && foundationCellsCard?.suit == card?.suit &&
+                ((foundationCellsCard?.rank == CardRank.Ace && card?.rank == CardRank.Two)
+                    || (Number(foundationCellsCard?.rank) + 1 == Number(card?.rank)))) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    function getTotalTime(formattedTime: string) {
+        // TODO: Add logic
+    }
+
     return (
-        <vstack height="95%" width="95%" alignment="center top" gap='small'>
-            <hstack width="100%" alignment="center middle" gap="medium">
-                <button appearance="secondary" onPress={onBackToMenu}> Back to Menu </button>
-                <text size="xlarge" weight="bold">Supermoves: {supermoves}</text>
-            </hstack>
+        <zstack width="100%" height="100%" alignment="center middle">
+            <vstack height="95%" width="95%" alignment="center top" gap='small'>
+                <zstack width="100%" height="50px" alignment="center middle">
+                    <hstack width="100%" alignment="start middle" gap="medium">
+                        <button width={BUTTON_SIZE} height={BUTTON_SIZE} onPress={() => setStopDialogShow(true)}>🠜</button>
+                    </hstack>
+                    <hstack width="100%" alignment="end middle" gap="medium">
+                        <button width={BUTTON_SIZE} height={BUTTON_SIZE} onPress={() => setIsRulesShow(true)}>?</button>
+                    </hstack>
 
-            {/* Empty and Foundation cells */}
-            <hstack width="100%" height="80px" alignment="center middle" gap="none">
-                {[...freeCells, ...foundationCells].map((cell, index) => {
-                    const isFreeCell = index < freeCells.length; // First 4 are free cells
+                    <hstack width="100%" alignment="center middle" gap="small">
+                        <text width={TEXT_WIDTH} alignment="center middle" size="medium" weight="bold">Supermoves: {supermoves}</text>
+                        <text width={TEXT_WIDTH} alignment="center middle" size="medium" weight="bold">Game: {gameSeed}</text>
+                        <TimerComponent width={TEXT_WIDTH} alignment="center middle" size="medium" getTotalTime={getTotalTime} isKeepGoing={isEndGame == GameStatus.InProgress} />
+                    </hstack>
+                </zstack>
 
-                    return (
-                        <zstack
-                            width={`${100 / (freeCells.length + foundationCells.length)}%`}
-                            height="100%" alignment="center middle"
-                            onPress={() => (isFreeCell ? handleFreeCellClick(index) : handleFoundationCellClick(index - freeCells.length))}>
-                            <CallComponent card={cell} isFreeCell={isFreeCell} />
+                {/* Empty and Foundation cells */}
+                <hstack width="100%" height="80px" alignment="center middle" gap="none">
+                    {[...freeCells, ...foundationCells].map((cell, index) => {
+                        const isFreeCell = index < freeCells.length; // First 4 are free cells
+
+                        return (
+                            <zstack
+                                width={`${100 / (freeCells.length + foundationCells.length)}%`}
+                                height="100%" alignment="center middle"
+                                onPress={() => (isFreeCell ? handleFreeCellClick(index) : handleFoundationCellClick(index - freeCells.length))}>
+                                <CallComponent card={cell} isFreeCell={isFreeCell} />
+                            </zstack>
+                        );
+                    })}
+                </hstack>
+
+                {/* Card columns */}
+                <hstack height="100%" width="100%" alignment="center middle">
+                    {columns.map((column, index) => (
+                        <zstack width={`${100 / columns.length}%`} height="100%" alignment="center middle" onPress={() => handleColumnClick(index)}>
+                            {column.map((card, cardIndex) => (<PlayingCardComponent card={card} cardIndex={cardIndex} />))}
                         </zstack>
-                    );
-                })}
-            </hstack>
+                    ))}
+                </hstack>
+            </vstack>
 
-            {/* Card columns */}
-            <hstack height="100%" width="100%" alignment="center middle">
-                {columns.map((column, index) => (
-                    <zstack width={`${100 / columns.length}%`} height="100%" alignment="center middle" onPress={() => handleColumnClick(index)}>
-                        {column.map((card, cardIndex) => (<PlayingCardComponent card={card} cardIndex={cardIndex} />))}
-                    </zstack>
-                ))}
-            </hstack>
-        </vstack>
+
+            {isRulesShow && (
+                <RulesDialogComponent onDialogClose={() => setIsRulesShow(false)} />
+            )}
+
+            {isStopDialogShow && (
+                <StopGameDialogComponent onBackToMenu={onBackToMenu} onDialogClose={() => setStopDialogShow(false)} />
+            )}
+
+            {isEndGame == GameStatus.Victory && (
+                <VictoryDialogComponent onDialogClose={onBackToMenu} />
+            )}
+
+            {isEndGame == GameStatus.Defeat && (
+                <DefeatDialogComponent onDialogClose={onBackToMenu} />
+            )}
+        </zstack>
     )
 }
