@@ -55,7 +55,7 @@ export function CallComponent({ card, isFreeCell }: CellProps) {
             )}
 
             {/* Select card */}
-            {card && card.isSelected && (
+            {card?.isSelected == true && (
                 <image
                     url='logo.png'
                     description='Selected card overlay'

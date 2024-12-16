@@ -1,8 +1,11 @@
-import { Devvit, useState } from '@devvit/public-api';
+import { Devvit, useState, RedditAPIClient, RedisClient } from '@devvit/public-api';
 
 import { PlayingCard } from '../models/PlayingCard.js';
+import { UserModel } from '../models/UserModel.js';
+
 import { CardRank } from '../enums/CardRank.js';
 import { GameStatus } from '../enums/GameStatus.js';
+
 import { PlayingCardComponent } from '../components/PlayingCardComponent.js';
 import { CallComponent } from '../components/CellComponent.js';
 import { TimerComponent } from '../components/TimerComponent.js';
@@ -12,18 +15,22 @@ import { DefeatDialogComponent } from '../components/DefeatDialogComponent.js';
 import { VictoryDialogComponent } from '../components/VictoryDialogComponent.js';
 
 const BUTTON_SIZE = "40px";
-const TEXT_WIDTH = "100px";
 
 interface GamePageProps {
     gameSeed: string;
+    user: UserModel;
+    isCompletedGame: boolean;
     cards: PlayingCard[][];
     onBackToMenu: () => void;
+    redditClient: RedditAPIClient;
+    redisClient: RedisClient;
 }
 
-export function GamePage({ gameSeed, cards, onBackToMenu }: GamePageProps) {
+export function GamePage({ gameSeed, user, isCompletedGame, cards, onBackToMenu, redditClient, redisClient }: GamePageProps) {
     const [isRulesShow, setIsRulesShow] = useState<boolean>(false);
     const [isStopDialogShow, setStopDialogShow] = useState<boolean>(false);
     const [isEndGame, setIsGameEnd] = useState<GameStatus>(GameStatus.InProgress);
+    const [gotTime, setTime] = useState<number | null>(null);
     const [supermoves, setSupermoves] = useState<number>(5);
     const [columns, setColumns] = useState<PlayingCard[][]>(cards);
     const [freeCells, setFreeCells] = useState<(PlayingCard | null)[]>(Array(4).fill(null)); // 4 Empty cells
@@ -252,11 +259,11 @@ export function GamePage({ gameSeed, cards, onBackToMenu }: GamePageProps) {
             unselectSelectedCards();
             // Select a card blank from a free cell
         } else if (freeCells[index] != null) {
-
             let freeCellCard = freeCells[index];
             freeCellCard.isInFreeCell = true;
             freeCellCard.isSelected = true;
             freeCellCard.columnPosition = -1;
+            setFreeCells([...freeCells]);
             setSelectedCards(addToSelectedCard(freeCellCard));
         }
     };
@@ -397,10 +404,6 @@ export function GamePage({ gameSeed, cards, onBackToMenu }: GamePageProps) {
         return false;
     }
 
-    function getTotalTime(formattedTime: string) {
-        // TODO: Add logic
-    }
-
     return (
         <zstack width="100%" height="100%" alignment="center middle">
             <vstack height="95%" width="95%" alignment="center top" gap='small'>
@@ -409,14 +412,17 @@ export function GamePage({ gameSeed, cards, onBackToMenu }: GamePageProps) {
                         <button width={BUTTON_SIZE} height={BUTTON_SIZE} onPress={() => setStopDialogShow(true)}>🠜</button>
                     </hstack>
                     <hstack width="100%" alignment="end middle" gap="medium">
+                        <button width="20px" height="20px" onPress={() => setIsGameEnd(GameStatus.Victory)}>TestV</button>
+                        <button width="20px" height="20px" onPress={() => setIsGameEnd(GameStatus.Defeat)}>TestD</button>
+
                         <button width={BUTTON_SIZE} height={BUTTON_SIZE} onPress={() => setIsRulesShow(true)}>?</button>
                     </hstack>
 
-                    <hstack width="100%" alignment="center middle" gap="small">
-                        <text width={TEXT_WIDTH} alignment="center middle" size="medium" weight="bold">Supermoves: {supermoves}</text>
-                        <text width={TEXT_WIDTH} alignment="center middle" size="medium" weight="bold">Game: {gameSeed}</text>
-                        <TimerComponent width={TEXT_WIDTH} alignment="center middle" size="medium" getTotalTime={getTotalTime} isKeepGoing={isEndGame == GameStatus.InProgress} />
-                    </hstack>
+                    <vstack width="100px" alignment="center middle" gap="none">
+                        <text size="medium" weight="bold">Supermoves: {supermoves}</text>
+                        <text size="medium" weight="bold">Game: {gameSeed}</text>
+                        <TimerComponent size="medium" getTotalTime={(totalTime: number) => setTime(totalTime)} isKeepGoing={isEndGame == GameStatus.InProgress} />
+                    </vstack>
                 </zstack>
 
                 {/* Empty and Foundation cells */}
@@ -454,12 +460,26 @@ export function GamePage({ gameSeed, cards, onBackToMenu }: GamePageProps) {
                 <StopGameDialogComponent onBackToMenu={onBackToMenu} onDialogClose={() => setStopDialogShow(false)} />
             )}
 
-            {isEndGame == GameStatus.Victory && (
-                <VictoryDialogComponent onDialogClose={onBackToMenu} />
+            {isEndGame == GameStatus.Victory && gotTime && (
+                <VictoryDialogComponent
+                    onDialogClose={onBackToMenu}
+                    totalTime={gotTime}
+                    gameSeed={gameSeed}
+                    isCompletedGame={isCompletedGame}
+                    user={user}
+                    redditClient={redditClient}
+                    redisClient={redisClient}
+                />
             )}
 
-            {isEndGame == GameStatus.Defeat && (
-                <DefeatDialogComponent onDialogClose={onBackToMenu} />
+            {isEndGame == GameStatus.Defeat && gotTime && (
+                <DefeatDialogComponent
+                    onDialogClose={onBackToMenu}
+                    totalTime={gotTime}
+                    user={user}
+                    redditClient={redditClient}
+                    redisClient={redisClient}
+                />
             )}
         </zstack>
     )

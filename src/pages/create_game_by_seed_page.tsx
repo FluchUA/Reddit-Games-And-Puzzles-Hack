@@ -43,8 +43,10 @@ export function CreateGameBySeedPage({ onBackToMenu, onStartGame }: CreateGameBy
                 <button width={BUTTON_SIZE} height={BUTTON_SIZE} onPress={onBackToMenu}>🠜</button>
             </hstack>
 
-            <vstack height="100%" width="100%" alignment="center middle" gap="medium">
+            <vstack height="100%" width="100%" alignment="center middle" gap="small">
                 <text size="xlarge" weight="bold">Enter the seed of the game</text>
+                <text size="medium" weight="bold">Please be aware that you will not receive victory points</text>
+                <text size="medium" weight="bold">if the game has already been won</text>
                 <text size="xxlarge" weight="bold">{seed}</text>
 
                 <hstack alignment="center middle" gap="small">
