@@ -37,13 +37,24 @@ export function CallComponent({ card, isFreeCell }: CellProps) {
             )}
 
             {card ? (
-                <image
-                    url={card.assetPath}
-                    description={`${card.rank} of ${card.suit}`}
-                    imageHeight={62}
-                    imageWidth={45}
-                    resizeMode='none'
-                />
+                <zstack height="100%" width="100%" alignment="center top">
+                    <image
+                        url={card.assetPath}
+                        description={`${card.rank} of ${card.suit}`}
+                        imageHeight={62}
+                        imageWidth={45}
+                        resizeMode='none'
+                    />
+
+                    {/* Card level */}
+                    <image
+                        url={card.cardLvlPath}
+                        description='Path to level card sprite'
+                        imageHeight={6}
+                        imageWidth={10}
+                        resizeMode='none'
+                    />
+                </zstack>
             ) : (
                 <image
                     url={imagePath}

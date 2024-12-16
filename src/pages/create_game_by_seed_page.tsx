@@ -1,6 +1,7 @@
 import { Devvit, useState } from '@devvit/public-api';
 
 const BUTTON_SIZE = "40px";
+const TEXT_COLOR = '#000000';
 
 interface CreateGameBySeedPageProps {
     onBackToMenu: () => void;
@@ -43,11 +44,10 @@ export function CreateGameBySeedPage({ onBackToMenu, onStartGame }: CreateGameBy
                 <button width={BUTTON_SIZE} height={BUTTON_SIZE} onPress={onBackToMenu}>🠜</button>
             </hstack>
 
-            <vstack height="100%" width="100%" alignment="center middle" gap="small">
-                <text size="xlarge" weight="bold">Enter the seed of the game</text>
-                <text size="medium" weight="bold">Please be aware that you will not receive victory points</text>
-                <text size="medium" weight="bold">if the game has already been won</text>
-                <text size="xxlarge" weight="bold">{seed}</text>
+            <vstack height="100%" width="310px" alignment="center middle" gap="small">
+                <text size="xlarge" weight="bold" color={TEXT_COLOR}>Enter the seed of the game</text>
+                <text size="medium" weight="bold" color={TEXT_COLOR} wrap={true} alignment='center middle'>Please be aware that you will receive a reduced number of experience points if they have previously won the game</text>
+                <text size="xxlarge" weight="bold" color={TEXT_COLOR}>{seed}</text>
 
                 <hstack alignment="center middle" gap="small">
                     <button width={BUTTON_SIZE} height={BUTTON_SIZE} appearance="primary" onPress={() => onNumberPressed(1)}>1</button>

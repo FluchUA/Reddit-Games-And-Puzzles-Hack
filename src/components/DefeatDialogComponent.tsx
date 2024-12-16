@@ -5,6 +5,7 @@ import { calculateLevelProgress } from '../utils/user_utils.js';
 import { formatTime } from '../utils/time_utils.js';
 
 const TEXT_COLOR = '#000000';
+const DEFEAT_XP_VALUE = 5;
 
 interface DefeatDialogProps {
     onDialogClose: () => void;
@@ -15,26 +16,20 @@ interface DefeatDialogProps {
 }
 
 export function DefeatDialogComponent({ onDialogClose, totalTime, user, redditClient, redisClient }: DefeatDialogProps) {
-    const [userModel, setUser] = useState<UserModel>(user);
-    const [refetchTrigger, setRefetchTrigger] = useState(0);
-
     const { data: userData, loading: scoreLoading, error: scoreError } = useAsync(async () => {
-        let currentUser = userModel;
+        let currentUser = user;
         currentUser.loseRate += 1;
-        currentUser.currentXP += 5;
+        currentUser.currentXP += DEFEAT_XP_VALUE;
 
         await redisClient.hSet(`userDetails:${currentUser.id}`, {
             xpValue: currentUser.currentXP.toString(),
             winRate: currentUser.winRate.toString(),
             loseRate: currentUser.loseRate.toString(),
+            recordsWon: currentUser.recordsWon.toString(),
         });
 
         return currentUser;
-    }, { depends: [refetchTrigger] });
-
-    if (userData != null) {
-        setUser(userData);
-    }
+    });
 
     return (
         <zstack height="100%" width="100%" alignment="center middle" gap="medium">
@@ -53,19 +48,19 @@ export function DefeatDialogComponent({ onDialogClose, totalTime, user, redditCl
                 description='White pixel to set the dialog background'
                 imageHeight={1}
                 imageWidth={1}
-                height="220px"
+                height="240px"
                 width="320px"
                 resizeMode='fill'
             />
 
             <vstack height="100%" width="400px" alignment="center middle" gap="small">
-                <text size="xxlarge" weight="bold" color={TEXT_COLOR}>Defeat +5XP</text>
+                <text size="xxlarge" weight="bold" color={TEXT_COLOR}>Defeat +{DEFEAT_XP_VALUE}XP</text>
                 <text size="xlarge" weight="bold" color={TEXT_COLOR}>Time: {formatTime(totalTime)}</text>
 
                 <hstack width="100%" alignment="center middle" gap="medium">
-                    <text size="medium" color={TEXT_COLOR}>LVL: {scoreLoading ? "-" : calculateLevelProgress(userModel.currentXP).level}</text>
-                    <text size="medium" color={TEXT_COLOR}>XP: {scoreLoading ? "-" : userModel.currentXP}</text>
-                    <text size="medium" color={TEXT_COLOR}>Next Level: {scoreLoading ? "-" : calculateLevelProgress(userModel.currentXP).xpToNextLevel}</text>
+                    <text size="medium" color={TEXT_COLOR}>LVL: {scoreLoading ? "-" : calculateLevelProgress((userData ?? user).currentXP).level}</text>
+                    <text size="medium" color={TEXT_COLOR}>XP: {scoreLoading ? "-" : (userData ?? user).currentXP}</text>
+                    <text size="medium" color={TEXT_COLOR}>Next Level: {scoreLoading ? "-" : calculateLevelProgress((userData ?? user).currentXP).xpToNextLevel}</text>
                 </hstack>
                 <text width="310px" size="medium" color={TEXT_COLOR} wrap={true}>No more moves are available! Unfortunately, this means the game has come to an end. Better luck next time!</text>
 

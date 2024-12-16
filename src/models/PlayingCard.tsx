@@ -9,5 +9,6 @@ export type PlayingCard = {
     isInFreeCell: boolean;
     columnPosition: number;
     assetPath: string;
+    cardLvlPath: string;
     dustAnimationState: number;
 };

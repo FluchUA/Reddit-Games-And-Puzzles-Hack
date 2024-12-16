@@ -62,6 +62,25 @@ export function PlayingCardComponent({ card, cardIndex }: PlayingCardProps) {
                 />
             </vstack>
 
+            {/* Card level */}
+            <vstack height="100%" width="100%" alignment="center top">
+                <image
+                    url='empty_pixel.png'
+                    description='Blank pixel for adding indents of playing cards'
+                    imageHeight={1}
+                    imageWidth={1}
+                    height={2.8 * cardIndex}
+                    resizeMode='none'
+                />
+                <image
+                    url={card.cardLvlPath}
+                    description='Path to level card sprite'
+                    imageHeight={6}
+                    imageWidth={10}
+                    resizeMode='none'
+                />
+            </vstack>
+
             {/* Select card */}
             {card.isSelected && (
                 <vstack height="100%" width="100%" alignment="center top">

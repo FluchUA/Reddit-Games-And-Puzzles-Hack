@@ -4,6 +4,7 @@ export class UserModel {
     currentXP: number;
     winRate: number;
     loseRate: number;
+    recordsWon: number;
     completedGames: string[];
     [key: string]: any;
 
@@ -13,6 +14,7 @@ export class UserModel {
         currentXP: number = 0,
         winRate: number = 0,
         loseRate: number = 0,
+        recordsWon: number = 0,
         completedGames: string[] = []
     ) {
         this.id = id;
@@ -20,6 +22,7 @@ export class UserModel {
         this.currentXP = currentXP;
         this.winRate = winRate;
         this.loseRate = loseRate;
+        this.recordsWon = recordsWon;
         this.completedGames = completedGames;
     }
 }

@@ -6,6 +6,9 @@ import { calculateLevelProgress } from '../utils/user_utils.js';
 import { formatTime } from '../utils/time_utils.js';
 
 const TEXT_COLOR = '#000000';
+const VICTORY_XP_VALUE = 300;
+const SECOND_VICTORY_XP_VALUE = 15;
+const SHARE_XP_VALUE = 200;
 
 interface VictoryDialogProps {
     onDialogClose: () => void;
@@ -18,42 +21,35 @@ interface VictoryDialogProps {
 }
 
 export function VictoryDialogComponent({ onDialogClose, totalTime, gameSeed, isCompletedGame, user, redditClient, redisClient }: VictoryDialogProps) {
-    const [userModel, setUser] = useState<UserModel>(user);
-    const [refetchTrigger, setRefetchTrigger] = useState(0);
-
     const { data: userData, loading: scoreLoading, error: scoreError } = useAsync(async () => {
-        let currentUser: UserModel | null = null;
-        if (!isCompletedGame) {
-            currentUser = userModel;
-            currentUser.winRate += 1;
-            currentUser.currentXP += 300;
-            currentUser.completedGames.push(gameSeed);
+        let currentUser = user;
+        currentUser.winRate += 1;
+        currentUser.currentXP += isCompletedGame ? SECOND_VICTORY_XP_VALUE : VICTORY_XP_VALUE;
+        currentUser.completedGames.push(gameSeed);
 
-            await redisClient.hSet(`userDetails:${currentUser.id}`, {
-                xpValue: currentUser.currentXP.toString(),
-                winRate: currentUser.winRate.toString(),
-                loseRate: currentUser.loseRate.toString(),
-            });
+        await redisClient.hSet(`userDetails:${currentUser.id}`, {
+            xpValue: currentUser.currentXP.toString(),
+            winRate: currentUser.winRate.toString(),
+            loseRate: currentUser.loseRate.toString(),
+            recordsWon: currentUser.recordsWon.toString(),
+        });
 
-            // Clear existing games for this user
-            await redisClient.del(`completedGames:${currentUser.id}`);
-            // // Add all games to the sorted set with scores as indices
-            const members = currentUser.completedGames.map((game, index) => ({ score: index, member: game }));
-            await redisClient.zAdd(`completedGames:${currentUser.id}`, ...members);
-        }
+        // Clear existing games for this user
+        await redisClient.del(`completedGames:${currentUser.id}`);
+        // // Add all games to the sorted set with scores as indices
+        const members = currentUser.completedGames.map((game, index) => ({ score: index, member: game }));
+        await redisClient.zAdd(`completedGames:${currentUser.id}`, ...members);
 
         return currentUser;
-    }, { depends: [refetchTrigger] });
-
-    if (userData != null) {
-        setUser(userData);
-    }
+    });
 
     async function onCreatePost() {
+        const userModel = (userData ?? user);
         await redisClient.hSet(`userDetails:${userModel.id}`, {
-            xpValue: (userModel.currentXP + 200).toString(),
+            xpValue: (userModel.currentXP + SHARE_XP_VALUE).toString(),
             winRate: userModel.winRate.toString(),
             loseRate: userModel.loseRate.toString(),
+            recordsWon: userModel.recordsWon.toString(),
         });
 
         const currentSubreddit = await redditClient.getCurrentSubreddit();
@@ -66,6 +62,7 @@ export function VictoryDialogComponent({ onDialogClose, totalTime, gameSeed, isC
         await redisClient.hSet(`subpost:${subpost.id}`, {
             totalTime: totalTime.toString(),
             gameSeed: gameSeed,
+            userID: userModel.id,
         });
 
         onDialogClose();
@@ -88,31 +85,31 @@ export function VictoryDialogComponent({ onDialogClose, totalTime, gameSeed, isC
                 description='White pixel to set the dialog background'
                 imageHeight={1}
                 imageWidth={1}
-                height="220px"
+                height="240px"
                 width="320px"
                 resizeMode='fill'
             />
 
             <vstack height="100%" width="400px" alignment="center middle" gap="small">
-                <text size="xxlarge" weight="bold" color={TEXT_COLOR}>Victory{isCompletedGame ? "" : " +300XP"}</text>
+                <text size="xxlarge" weight="bold" color={TEXT_COLOR}>Victory +{isCompletedGame ? SECOND_VICTORY_XP_VALUE : VICTORY_XP_VALUE}XP</text>
                 <text size="xlarge" weight="bold" color={TEXT_COLOR}>Time: {formatTime(totalTime)}</text>
 
-                {isCompletedGame ? (
+                {isCompletedGame &&
                     <vstack height="50px" width="100%" alignment="center middle" gap="small">
                         <text size="small" weight="bold" color={TEXT_COLOR}>Since you've already played this game,</text>
-                        <text size="small" weight="bold" color={TEXT_COLOR}>you won't be earning experience points this time around</text>
+                        <text size="small" weight="bold" color={TEXT_COLOR}>you've received a reduced amount of experience points</text>
                     </vstack>
-                ) : (
-                    <hstack width="100%" alignment="center middle" gap="medium">
-                        <text size="medium" color={TEXT_COLOR}>LVL: {scoreLoading ? "-" : calculateLevelProgress(userModel.currentXP).level}</text>
-                        <text size="medium" color={TEXT_COLOR}>XP: {scoreLoading ? "-" : userModel.currentXP}</text>
-                        <text size="medium" color={TEXT_COLOR}>Next Level: {scoreLoading ? "-" : calculateLevelProgress(userModel.currentXP).xpToNextLevel}</text>
-                    </hstack>
-                )}
+                }
+
+                <hstack width="100%" alignment="center middle" gap="medium">
+                    <text size="medium" color={TEXT_COLOR}>LVL: {scoreLoading ? "-" : calculateLevelProgress((userData ?? user).currentXP).level}</text>
+                    <text size="medium" color={TEXT_COLOR}>XP: {scoreLoading ? "-" : (userData ?? user).currentXP}</text>
+                    <text size="medium" color={TEXT_COLOR}>Next Level: {scoreLoading ? "-" : calculateLevelProgress((userData ?? user).currentXP).xpToNextLevel}</text>
+                </hstack>
 
                 <hstack height="50px" width="100%" alignment="center middle" gap="small">
                     <button appearance="primary" onPress={onDialogClose}>OK</button>
-                    {!isCompletedGame && <button appearance="primary" onPress={onCreatePost}>Create Post (+200XP)</button>}
+                    {!isCompletedGame && <button appearance="primary" onPress={onCreatePost}>Create Post (+{SHARE_XP_VALUE}XP)</button>}
                 </hstack>
             </vstack>
 

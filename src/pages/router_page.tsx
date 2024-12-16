@@ -43,32 +43,19 @@ export function RouterPage({ context }: RouterPageProps) {
                 user.currentXP = Number(userDetails.xpValue ?? 0);
                 user.winRate = Number(userDetails.winRate ?? 0);
                 user.loseRate = Number(userDetails.loseRate ?? 0);
+                user.recordsWon = Number(userDetails.recordsWon ?? 0);
             }
         }
 
-        /// TODO: card's List
-
-        /// call post api's
         /// get post game results
         const postData = await context.redis.hGetAll(`subpost:${context.postId}`);
 
         return { user, postData };
     }, { depends: [refetchTrigger] });
 
-    if (screen == PageType.MainMenu && combinedData?.user != null && combinedData?.user.currentXP != user.currentXP) {
-        console.log("SAVE USER");
-        console.log(`xp:${combinedData?.user.currentXP}`);
-        setUser(combinedData?.user);
-    }
-
     // if (screen == PageType.MainMenu && combinedData?.postData?.gameSeed != null) {
     //     setScreen(PageType.Subpost);
     // }
-
-    function changeScreen(newScreen: PageType) {
-        setScreen(newScreen);
-        setRefetchTrigger(prev => prev + 1);
-    }
 
     /// Creates a deck according to a given seed of the game
     function onStartGame(gameSeed: string) {
@@ -81,14 +68,14 @@ export function RouterPage({ context }: RouterPageProps) {
                 uniqueSeed = Math.floor(Math.random() * 1000000).toString();
 
                 // Checking if the generated grain is unique
-                isUnique = !user.completedGames.includes(uniqueSeed);
+                isUnique = !(combinedData?.user ?? user).completedGames.includes(uniqueSeed);
             }
             currentSeed = uniqueSeed;
         }
 
         let formatedSeed = currentSeed.replace(/[^0-9]/g, "");
         setSeed(formatedSeed);
-        setIsCompletedGame(user.completedGames.includes(formatedSeed))
+        setIsCompletedGame((combinedData?.user ?? user).completedGames.includes(formatedSeed))
         const random = seedrandom(formatedSeed);
 
         // Playing cards
@@ -103,16 +90,26 @@ export function RouterPage({ context }: RouterPageProps) {
                     isInFreeCell: false,
                     columnPosition: 0,
                     assetPath: `cards/card_${suit}_${rank}.png`,
+                    cardLvlPath: "card_levels/card_level_1.png",
                     dustAnimationState: 0,
                 });
             }
         }
 
+        // Card level calculation
+        const shuffledDeck = [...deck].sort(() => random() - 0.5);
+        const recordsWon = (combinedData?.user ?? user).recordsWon > 208 ? 208 : (combinedData?.user ?? user).recordsWon;
+        const generalCardLevel = Math.ceil(recordsWon / 52);
+        const newLvlCardCount = recordsWon - Math.floor(recordsWon / 52) * 52;
+        for (let i = 0; i < shuffledDeck.length; i++) {
+            shuffledDeck[i].cardLvlPath = `card_levels/card_level_${generalCardLevel + (i < newLvlCardCount ? generalCardLevel + 1 : 0)}.png`;
+        }
+
         let newCardColumns: PlayingCard[][] = Array.from({ length: 8 }, () => []);
         for (let i = 0; i < newCardColumns.length; i++) {
             for (let j = 0; j < (i < 4 ? 7 : 6); j++) {
-                const randomIndex = Math.floor(random() * deck.length);
-                const [card] = deck.splice(randomIndex, 1);
+                const randomIndex = Math.floor(random() * shuffledDeck.length);
+                const [card] = shuffledDeck.splice(randomIndex, 1);
                 newCardColumns[i].push(card);
             }
         }
@@ -125,24 +122,27 @@ export function RouterPage({ context }: RouterPageProps) {
         <zstack height="100%" width="100%" gap="medium" alignment="center middle">
             {screen === PageType.Subpost && <SubpostPage gameSeed={combinedData?.postData?.gameSeed ?? ""} onStartGame={(seed: string) => onStartGame(seed)} />}
             {screen === PageType.MainMenu && <MainMenuPage
-                user={user}
+                user={combinedData?.user ?? user}
                 onStartGame={() => setScreen(PageType.CreateGame)}
             />}
             {screen === PageType.Game && <GamePage
                 gameSeed={seed}
-                user={user}
+                user={combinedData?.user ?? user}
                 isCompletedGame={isCompletedGame}
                 cards={columns}
-                onBackToMenu={() => changeScreen(PageType.MainMenu)}
+                onBackToMenu={() => {
+                    setScreen(PageType.MainMenu);
+                    setRefetchTrigger(prev => prev + 1);
+                }}
                 redditClient={context.reddit}
                 redisClient={context.redis}
             />}
             {screen === PageType.CreateGameBySeed && <CreateGameBySeedPage
-                onBackToMenu={() => changeScreen(PageType.MainMenu)}
+                onBackToMenu={() => setScreen(PageType.MainMenu)}
                 onStartGame={(seed: string) => onStartGame(seed)}
             />}
             {screen === PageType.CreateGame && <CreateGamePage
-                onBackToMenu={() => changeScreen(PageType.MainMenu)}
+                onBackToMenu={() => setScreen(PageType.MainMenu)}
                 onOpenCreateBySeedPage={() => setScreen(PageType.CreateGameBySeed)}
                 onStartGame={(seed: string) => onStartGame(seed)}
             />}
