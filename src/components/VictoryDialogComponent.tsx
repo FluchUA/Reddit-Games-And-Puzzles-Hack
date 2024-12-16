@@ -18,14 +18,19 @@ interface VictoryDialogProps {
     user: UserModel;
     redditClient: RedditAPIClient;
     redisClient: RedisClient;
+    postData: Record<string, string> | undefined;
 }
 
-export function VictoryDialogComponent({ onDialogClose, totalTime, gameSeed, isCompletedGame, user, redditClient, redisClient }: VictoryDialogProps) {
+export function VictoryDialogComponent({ onDialogClose, totalTime, gameSeed, isCompletedGame, user, redditClient, redisClient, postData }: VictoryDialogProps) {
     const { data: userData, loading: scoreLoading, error: scoreError } = useAsync(async () => {
         let currentUser = user;
         currentUser.winRate += 1;
         currentUser.currentXP += isCompletedGame ? SECOND_VICTORY_XP_VALUE : VICTORY_XP_VALUE;
         currentUser.completedGames.push(gameSeed);
+
+        if (postData?.subpostID != null) {
+            currentUser.recordsWon += 1;
+        }
 
         await redisClient.hSet(`userDetails:${currentUser.id}`, {
             xpValue: currentUser.currentXP.toString(),
@@ -39,6 +44,25 @@ export function VictoryDialogComponent({ onDialogClose, totalTime, gameSeed, isC
         // // Add all games to the sorted set with scores as indices
         const members = currentUser.completedGames.map((game, index) => ({ score: index, member: game }));
         await redisClient.zAdd(`completedGames:${currentUser.id}`, ...members);
+
+        if (postData?.subpostID != null) {
+            const subpostID = postData?.subpostID;
+            currentUser.wonSubposts.push(subpostID);
+
+            await redisClient.hSet(`subpost:${subpostID}`, {
+                subpostID: subpostID,
+                totalTime: postData.totalTime.toString(),
+                gameSeed: postData.gameSeed,
+                userID: postData.userID,
+                victoriesNumber: (Number(postData.victoriesNumber ?? 0) + 1).toString(),
+                defeatsNumber: postData.defeatsNumber,
+                ownerInfoString: postData.ownerInfoString,
+            });
+
+            await redisClient.del(`wonSubposts:${currentUser.id}`);
+            const members = currentUser.wonSubposts.map((game, index) => ({ score: index, member: game }));
+            await redisClient.zAdd(`wonSubposts:${currentUser.id}`, ...members);
+        }
 
         return currentUser;
     });
@@ -59,10 +83,15 @@ export function VictoryDialogComponent({ onDialogClose, totalTime, gameSeed, isC
             preview: (<ProgressIndicatorComponent />),
         });
 
+        console.log(`NEW subpost:${subpost.id}`);
         await redisClient.hSet(`subpost:${subpost.id}`, {
+            subpostID: subpost.id,
             totalTime: totalTime.toString(),
             gameSeed: gameSeed,
             userID: userModel.id,
+            victoriesNumber: "0",
+            defeatsNumber: "0",
+            ownerInfoString: `${(userData ?? user).name} ${calculateLevelProgress((userData ?? user).currentXP).level}`,
         });
 
         onDialogClose();
@@ -90,7 +119,7 @@ export function VictoryDialogComponent({ onDialogClose, totalTime, gameSeed, isC
                 resizeMode='fill'
             />
 
-            <vstack height="100%" width="400px" alignment="center middle" gap="small">
+            <vstack height="100%" width="310px" alignment="center middle" gap="small">
                 <text size="xxlarge" weight="bold" color={TEXT_COLOR}>Victory +{isCompletedGame ? SECOND_VICTORY_XP_VALUE : VICTORY_XP_VALUE}XP</text>
                 <text size="xlarge" weight="bold" color={TEXT_COLOR}>Time: {formatTime(totalTime)}</text>
 
@@ -107,9 +136,9 @@ export function VictoryDialogComponent({ onDialogClose, totalTime, gameSeed, isC
                     <text size="medium" color={TEXT_COLOR}>Next Level: {scoreLoading ? "-" : calculateLevelProgress((userData ?? user).currentXP).xpToNextLevel}</text>
                 </hstack>
 
-                <hstack height="50px" width="100%" alignment="center middle" gap="small">
+                <hstack height="80px" width="100%" alignment="center middle" gap="small">
                     <button appearance="primary" onPress={onDialogClose}>OK</button>
-                    {!isCompletedGame && <button appearance="primary" onPress={onCreatePost}>Create Post (+{SHARE_XP_VALUE}XP)</button>}
+                    {!isCompletedGame && postData?.subpostID == null && <button appearance="primary" onPress={onCreatePost}>Create Post (+{SHARE_XP_VALUE}XP)</button>}
                 </hstack>
             </vstack>
 

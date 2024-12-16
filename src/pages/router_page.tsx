@@ -25,7 +25,7 @@ export function RouterPage({ context }: RouterPageProps) {
     const [user, setUser] = useState<UserModel>(new UserModel());
     const [seed, setSeed] = useState<string>("");
     const [isCompletedGame, setIsCompletedGame] = useState<boolean>(false);
-    const [screen, setScreen] = useState<PageType>(PageType.MainMenu);
+    const [screen, setScreen] = useState<PageType>(PageType.None);
     const [columns, setColumns] = useState<PlayingCard[][]>([]);
     const [refetchTrigger, setRefetchTrigger] = useState(0);
 
@@ -34,10 +34,14 @@ export function RouterPage({ context }: RouterPageProps) {
         if (userData != null) {
             const userDetails = await context.redis.hGetAll(`userDetails:${userData.id}`);
             const completedGames = await context.redis.zRange(`completedGames:${userData.id}`, 0, -1);
+            const wonSubposts = await context.redis.zRange(`wonSubposts:${userData.id}`, 0, -1);
+            const lostSubposts = await context.redis.zRange(`lostSubposts:${userData.id}`, 0, -1);
 
             user.id = userData.id;
             user.name = userData.username;
             user.completedGames = completedGames.map(item => item.member);
+            user.wonSubposts = wonSubposts.map(item => item.member);
+            user.lostSubposts = lostSubposts.map(item => item.member);
 
             if (userDetails != null) {
                 user.currentXP = Number(userDetails.xpValue ?? 0);
@@ -53,9 +57,11 @@ export function RouterPage({ context }: RouterPageProps) {
         return { user, postData };
     }, { depends: [refetchTrigger] });
 
-    // if (screen == PageType.MainMenu && combinedData?.postData?.gameSeed != null) {
-    //     setScreen(PageType.Subpost);
-    // }
+    if ((screen === PageType.None || screen === PageType.MainMenu) && combinedData?.postData?.gameSeed != null) {
+        setScreen(PageType.Subpost);
+    } else if (screen === PageType.None) {
+        setScreen(PageType.MainMenu);
+    }
 
     /// Creates a deck according to a given seed of the game
     function onStartGame(gameSeed: string) {
@@ -101,8 +107,9 @@ export function RouterPage({ context }: RouterPageProps) {
         const recordsWon = (combinedData?.user ?? user).recordsWon > 208 ? 208 : (combinedData?.user ?? user).recordsWon;
         const generalCardLevel = Math.ceil(recordsWon / 52);
         const newLvlCardCount = recordsWon - Math.floor(recordsWon / 52) * 52;
+        
         for (let i = 0; i < shuffledDeck.length; i++) {
-            shuffledDeck[i].cardLvlPath = `card_levels/card_level_${generalCardLevel + (i < newLvlCardCount ? generalCardLevel + 1 : 0)}.png`;
+            shuffledDeck[i].cardLvlPath = `card_levels/card_level_${generalCardLevel + (i < newLvlCardCount ? 1 : 0)}.png`;
         }
 
         let newCardColumns: PlayingCard[][] = Array.from({ length: 8 }, () => []);
@@ -120,7 +127,11 @@ export function RouterPage({ context }: RouterPageProps) {
 
     return (
         <zstack height="100%" width="100%" gap="medium" alignment="center middle">
-            {screen === PageType.Subpost && <SubpostPage gameSeed={combinedData?.postData?.gameSeed ?? ""} onStartGame={(seed: string) => onStartGame(seed)} />}
+            {screen === PageType.Subpost && <SubpostPage
+                user={combinedData?.user ?? user}
+                postData={combinedData?.postData}
+                onStartGame={(seed: string) => onStartGame(seed)}
+            />}
             {screen === PageType.MainMenu && <MainMenuPage
                 user={combinedData?.user ?? user}
                 onStartGame={() => setScreen(PageType.CreateGame)}
@@ -129,6 +140,7 @@ export function RouterPage({ context }: RouterPageProps) {
                 gameSeed={seed}
                 user={combinedData?.user ?? user}
                 isCompletedGame={isCompletedGame}
+                postData={combinedData?.postData}
                 cards={columns}
                 onBackToMenu={() => {
                     setScreen(PageType.MainMenu);

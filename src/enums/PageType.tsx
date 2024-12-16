@@ -4,4 +4,5 @@ export enum PageType {
     CreateGameBySeed = 'create_game_by_seed',
     Game = 'game',
     Subpost = 'subpost',
+    None = 'none',
 }

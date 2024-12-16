@@ -6,6 +6,8 @@ export class UserModel {
     loseRate: number;
     recordsWon: number;
     completedGames: string[];
+    wonSubposts: string[];
+    lostSubposts: string[];
     [key: string]: any;
 
     constructor(
@@ -15,7 +17,9 @@ export class UserModel {
         winRate: number = 0,
         loseRate: number = 0,
         recordsWon: number = 0,
-        completedGames: string[] = []
+        wonSubposts: string[] = [],
+        lostSubposts: string[] = [],
+        completedGames: string[] = [],
     ) {
         this.id = id;
         this.name = name;
@@ -23,6 +27,8 @@ export class UserModel {
         this.winRate = winRate;
         this.loseRate = loseRate;
         this.recordsWon = recordsWon;
+        this.wonSubposts = wonSubposts;
+        this.lostSubposts = lostSubposts;
         this.completedGames = completedGames;
     }
 }

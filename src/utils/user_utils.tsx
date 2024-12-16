@@ -4,7 +4,7 @@ export function calculateLevelProgress(currentXP: number): {
     totalXPForNextLevel: number
 } {
     const XP_BASE = 300; // Base amount of experience for the first level
-    const XP_GROWTH = 100; // Increase in experience requirements per level
+    const XP_GROWTH = 50; // Increase in experience requirements per level
 
     let level = 1; // Starting at level one
     let totalXPForLevel = XP_BASE; // Experience for current level

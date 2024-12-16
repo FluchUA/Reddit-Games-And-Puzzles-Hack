@@ -39,8 +39,18 @@ export function CreateGameBySeedPage({ onBackToMenu, onStartGame }: CreateGameBy
     };
 
     return (
-        <zstack height="95%" width="95%" alignment="center top" gap="medium">
-            <hstack width="100%" alignment="start top" gap="medium">
+        <zstack height="95%" width="95%" alignment="center middle" gap="medium">
+            <image
+                url='dark_transparent_pixel.png'
+                description='Semi-transparent pixel to darken the background'
+                imageHeight={1}
+                imageWidth={1}
+                height="420px"
+                width="420px"
+                resizeMode='fill'
+            />
+
+            <hstack width="100%" height="100%" alignment="start top" gap="medium">
                 <button width={BUTTON_SIZE} height={BUTTON_SIZE} onPress={onBackToMenu}>🠜</button>
             </hstack>
 

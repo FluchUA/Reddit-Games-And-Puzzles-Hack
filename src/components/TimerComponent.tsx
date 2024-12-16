@@ -5,14 +5,24 @@ interface TimerComponentProps {
     size: Devvit.Blocks.TextSize
     getTotalTime: (totalTime: number) => void;
     isKeepGoing: boolean;
+    totalTime: number | null;
+    stopGame: () => void;
 }
 
-export function TimerComponent({ size, isKeepGoing, getTotalTime }: TimerComponentProps) {
-    const [secondsValue, setSomeSeconds] = useState(0);
+export function TimerComponent({ size, isKeepGoing, getTotalTime, totalTime, stopGame }: TimerComponentProps) {
+    const [secondsValue, setSomeSeconds] = useState(totalTime ?? 0);
 
     useInterval(() => {
         if (isKeepGoing) {
-            setSomeSeconds((prev) => prev + 1);
+            if (totalTime != null) {
+                if (secondsValue > 0) {
+                    setSomeSeconds((prev) => prev - 1);
+                } else {
+                    stopGame();
+                }
+            } else {
+                setSomeSeconds((prev) => prev + 1);
+            }
         } else {
             getTotalTime(secondsValue);
         }

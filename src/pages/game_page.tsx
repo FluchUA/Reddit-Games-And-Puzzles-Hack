@@ -20,13 +20,14 @@ interface GamePageProps {
     gameSeed: string;
     user: UserModel;
     isCompletedGame: boolean;
+    postData: Record<string, string> | undefined;
     cards: PlayingCard[][];
     onBackToMenu: () => void;
     redditClient: RedditAPIClient;
     redisClient: RedisClient;
 }
 
-export function GamePage({ gameSeed, user, isCompletedGame, cards, onBackToMenu, redditClient, redisClient }: GamePageProps) {
+export function GamePage({ gameSeed, user, isCompletedGame, postData, cards, onBackToMenu, redditClient, redisClient }: GamePageProps) {
     const [isRulesShow, setIsRulesShow] = useState<boolean>(false);
     const [isStopDialogShow, setStopDialogShow] = useState<boolean>(false);
     const [isEndGame, setIsGameEnd] = useState<GameStatus>(GameStatus.InProgress);
@@ -420,8 +421,14 @@ export function GamePage({ gameSeed, user, isCompletedGame, cards, onBackToMenu,
 
                     <vstack width="100px" alignment="center middle" gap="none">
                         <text size="medium" weight="bold">Supermoves: {supermoves}</text>
-                        <text size="medium" weight="bold">Game: {gameSeed}</text>
-                        <TimerComponent size="medium" getTotalTime={(totalTime: number) => setTime(totalTime)} isKeepGoing={isEndGame == GameStatus.InProgress} />
+                        <text size="medium" weight="bold">Game: {postData?.gameSeed == null ? gameSeed : "******"}</text>
+                        <TimerComponent
+                            size="medium"
+                            getTotalTime={(totalTime: number) => setTime(totalTime)}
+                            isKeepGoing={isEndGame == GameStatus.InProgress}
+                            totalTime={postData?.totalTime != null ? Number(postData?.totalTime) : null}
+                            stopGame={() => setIsGameEnd(GameStatus.Defeat)}
+                        />
                     </vstack>
                 </zstack>
 
@@ -469,6 +476,7 @@ export function GamePage({ gameSeed, user, isCompletedGame, cards, onBackToMenu,
                     user={user}
                     redditClient={redditClient}
                     redisClient={redisClient}
+                    postData={postData}
                 />
             )}
 
@@ -477,8 +485,8 @@ export function GamePage({ gameSeed, user, isCompletedGame, cards, onBackToMenu,
                     onDialogClose={onBackToMenu}
                     totalTime={gotTime}
                     user={user}
-                    redditClient={redditClient}
                     redisClient={redisClient}
+                    postData={postData}
                 />
             )}
         </zstack>
