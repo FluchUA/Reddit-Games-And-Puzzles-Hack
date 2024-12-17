@@ -55,14 +55,14 @@ export function CreateGameBySeedPage({ onBackToMenu, onStartGame }: CreateGameBy
                 resizeMode='none'
             />
 
-            <hstack width="95%" height="95%" alignment="start top" gap="medium">
+            <hstack width="98%" height="98%" alignment="start top" gap="medium">
                 <image url='buttons/b_back.png' description='Back Button' imageHeight={40} imageWidth={40} resizeMode='none' onPress={onBackToMenu} />
             </hstack>
 
             <vstack height="100%" width="310px" alignment="center middle" gap="small">
-                <text size="xlarge" weight="bold" color={TEXT_COLOR}>Enter the seed of the game</text>
-                <text size="medium" weight="bold" color={TEXT_COLOR} wrap={true} alignment='center middle'>Please be aware that you will receive a reduced number of experience points if they have previously won the game</text>
-                <text size="xxlarge" weight="bold" color={TEXT_COLOR}>{seed}</text>
+                <text size="xxlarge" color={TEXT_COLOR} selectable={false}>Enter the seed of the game</text>
+                <text size="medium" color={TEXT_COLOR} selectable={false} wrap={true} alignment='center middle'>Please be aware that you will receive a reduced number of experience points if they have previously won the game</text>
+                <text size="xxlarge" color={TEXT_COLOR} selectable={false}>{seed}</text>
 
                 <hstack alignment="center middle" gap="small">
                     <image url='buttons/b_1.png' description='Button 1' imageHeight={40} imageWidth={40} resizeMode='none' onPress={() => onNumberPressed(1)} />

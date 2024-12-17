@@ -80,7 +80,7 @@ export function VictoryDialogComponent({ onDialogClose, totalTime, gameSeed, isC
         const subpost = await redditClient.submitPost({
             title: 'Can you beat my time?',
             subredditName: currentSubreddit.name,
-            preview: (<ProgressIndicatorComponent />),
+            preview: (<ProgressIndicatorComponent isDarkBackground={true} />),
         });
 
         await redisClient.hSet(`subpost:${subpost.id}`, {
@@ -109,39 +109,37 @@ export function VictoryDialogComponent({ onDialogClose, totalTime, gameSeed, isC
             />
 
             <image
-                url='white_pixel.png'
-                description='White pixel to set the dialog background'
-                imageHeight={1}
-                imageWidth={1}
-                height="240px"
-                width="320px"
-                resizeMode='fill'
+                url='interface_background/small_dialog_background.png'
+                description='Dialog background'
+                imageHeight={410}
+                imageWidth={410}
+                resizeMode='none'
             />
 
-            <vstack height="100%" width="310px" alignment="center middle" gap="small">
-                <text size="xxlarge" weight="bold" color={TEXT_COLOR}>Victory +{isCompletedGame ? SECOND_VICTORY_XP_VALUE : VICTORY_XP_VALUE}XP</text>
-                <text size="xlarge" weight="bold" color={TEXT_COLOR}>Time: {formatTime(totalTime)}</text>
+            <vstack height="200px" width="310px" alignment="center top" gap="small">
+                <text size="xxlarge" weight="bold" color={TEXT_COLOR} selectable={false}>Victory +{isCompletedGame ? SECOND_VICTORY_XP_VALUE : VICTORY_XP_VALUE}XP</text>
+                <text size="xlarge" weight="bold" color={TEXT_COLOR} selectable={false}>Time: {formatTime(totalTime)}</text>
 
                 {isCompletedGame &&
                     <vstack height="50px" width="100%" alignment="center middle" gap="small">
-                        <text size="small" weight="bold" color={TEXT_COLOR}>Since you've already played this game,</text>
-                        <text size="small" weight="bold" color={TEXT_COLOR}>you've received a reduced amount of experience points</text>
+                        <text size="small" weight="bold" color={TEXT_COLOR} selectable={false}>Since you've already played this game,</text>
+                        <text size="small" weight="bold" color={TEXT_COLOR} selectable={false}>you've received a reduced amount of experience points</text>
                     </vstack>
                 }
 
                 <hstack width="100%" alignment="center middle" gap="medium">
-                    <text size="medium" color={TEXT_COLOR}>LVL: {scoreLoading ? "-" : calculateLevelProgress((userData ?? user).currentXP).level}</text>
-                    <text size="medium" color={TEXT_COLOR}>XP: {scoreLoading ? "-" : (userData ?? user).currentXP}</text>
-                    <text size="medium" color={TEXT_COLOR}>Next Level: {scoreLoading ? "-" : calculateLevelProgress((userData ?? user).currentXP).xpToNextLevel}</text>
-                </hstack>
-
-                <hstack height="80px" width="100%" alignment="center middle" gap="small">
-                    <image url='buttons/b_ok.png' description='Ok button' imageHeight={40} imageWidth={41} resizeMode='none' onPress={onDialogClose} />
-                    {!isCompletedGame && postData?.subpostID == null && <button appearance="primary" onPress={onCreatePost}>Create Post (+{SHARE_XP_VALUE}XP)</button>}
+                    <text size="medium" color={TEXT_COLOR} selectable={false}>LVL: {scoreLoading ? "-" : calculateLevelProgress((userData ?? user).currentXP).level}</text>
+                    <text size="medium" color={TEXT_COLOR} selectable={false}>XP: {scoreLoading ? "-" : (userData ?? user).currentXP}</text>
+                    <text size="medium" color={TEXT_COLOR} selectable={false}>Next Level: {scoreLoading ? "-" : calculateLevelProgress((userData ?? user).currentXP).xpToNextLevel}</text>
                 </hstack>
             </vstack>
 
-            {scoreLoading && <ProgressIndicatorComponent />}
+            <vstack height="230px" width="420px" alignment="center bottom" gap="small">
+                {!isCompletedGame && postData?.subpostID == null && <image url='buttons/b_create_post.png' description='Ok button' imageHeight={40} imageWidth={253} resizeMode='none' onPress={onCreatePost} />}
+                <image url='buttons/b_ok.png' description='Ok button' imageHeight={40} imageWidth={41} resizeMode='none' onPress={onDialogClose} />
+            </vstack>
+
+            {scoreLoading && <ProgressIndicatorComponent isDarkBackground={false} />}
         </zstack>
     );
 };

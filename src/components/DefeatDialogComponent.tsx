@@ -63,33 +63,31 @@ export function DefeatDialogComponent({ onDialogClose, totalTime, user, redisCli
             />
 
             <image
-                url='white_pixel.png'
-                description='White pixel to set the dialog background'
-                imageHeight={1}
-                imageWidth={1}
-                height="240px"
-                width="320px"
-                resizeMode='fill'
+                url='interface_background/small_dialog_background.png'
+                description='Dialog background'
+                imageHeight={410}
+                imageWidth={410}
+                resizeMode='none'
             />
 
             <vstack height="100%" width="400px" alignment="center middle" gap="small">
-                <text size="xxlarge" weight="bold" color={TEXT_COLOR}>Defeat +{DEFEAT_XP_VALUE}XP</text>
-                {postData?.subpostID == null && <text size="xlarge" weight="bold" color={TEXT_COLOR}>Time: {formatTime(totalTime)}</text>}
+                <text size="xxlarge" weight="bold" color={TEXT_COLOR} selectable={false}>Defeat +{DEFEAT_XP_VALUE}XP</text>
+                {postData?.subpostID == null && <text size="xlarge" weight="bold" color={TEXT_COLOR} selectable={false}>Time: {formatTime(totalTime)}</text>}
 
                 <hstack width="100%" alignment="center middle" gap="medium">
-                    <text size="medium" color={TEXT_COLOR}>LVL: {scoreLoading ? "-" : calculateLevelProgress((userData ?? user).currentXP).level}</text>
-                    <text size="medium" color={TEXT_COLOR}>XP: {scoreLoading ? "-" : (userData ?? user).currentXP}</text>
-                    <text size="medium" color={TEXT_COLOR}>Next Level: {scoreLoading ? "-" : calculateLevelProgress((userData ?? user).currentXP).xpToNextLevel}</text>
+                    <text size="medium" color={TEXT_COLOR} selectable={false}>LVL: {scoreLoading ? "-" : calculateLevelProgress((userData ?? user).currentXP).level}</text>
+                    <text size="medium" color={TEXT_COLOR} selectable={false}>XP: {scoreLoading ? "-" : (userData ?? user).currentXP}</text>
+                    <text size="medium" color={TEXT_COLOR} selectable={false}>Next Level: {scoreLoading ? "-" : calculateLevelProgress((userData ?? user).currentXP).xpToNextLevel}</text>
                 </hstack>
 
                 {postData?.subpostID == null ?
-                    (<text width="310px" size="medium" color={TEXT_COLOR} alignment="center middle" wrap={true}>No more moves are available! Unfortunately, this means the game has come to an end. Better luck next time!</text>)
-                    : (<text width="310px" size="medium" color={TEXT_COLOR} alignment="center middle" wrap={true}>Unfortunately, your time has run out</text>)}
+                    (<text width="310px" size="medium" color={TEXT_COLOR} alignment="center middle" wrap={true} selectable={false}>No more moves are available! Unfortunately, this means the game has come to an end. Better luck next time!</text>)
+                    : (<text width="310px" size="medium" color={TEXT_COLOR} alignment="center middle" wrap={true} selectable={false}>Unfortunately, your time has run out</text>)}
 
                 <image url='buttons/b_ok.png' description='Ok button' imageHeight={40} imageWidth={41} resizeMode='none' onPress={onDialogClose} />
             </vstack>
 
-            {scoreLoading && <ProgressIndicatorComponent />}
+            {scoreLoading && <ProgressIndicatorComponent isDarkBackground={false} />}
         </zstack>
     );
 };

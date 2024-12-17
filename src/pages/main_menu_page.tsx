@@ -32,17 +32,17 @@ export function MainMenuPage({ user, onStartGame, }: MainMenuPageProps) {
             />
 
             <vstack height="100%" width="100%" alignment="center middle" gap="medium">
-                <text size="xxlarge" color={TEXT_COLOR}>Hi, {user.name}! {calculateLevelProgress(user.currentXP).level}LVL</text>
-                <text size="xlarge" height="50px" alignment="center top" color={TEXT_COLOR}>Let’s see what you can achieve today!</text>
+                <text size="xxlarge" color={TEXT_COLOR} selectable={false}>Hi, {user.name}! {calculateLevelProgress(user.currentXP).level}LVL</text>
+                <text size="xlarge" height="50px" alignment="center top" color={TEXT_COLOR} selectable={false}>Let’s see what you can achieve today!</text>
 
                 <hstack width="100%" alignment="center middle" gap="small">
-                    <text size="medium" alignment="center middle" color={TEXT_COLOR}>XP: {user.currentXP}</text>
-                    <text size="medium" alignment="center middle" color={TEXT_COLOR}>Next Level: {calculateLevelProgress(user.currentXP).xpToNextLevel}</text>
+                    <text size="medium" alignment="center middle" color={TEXT_COLOR} selectable={false}>XP: {user.currentXP}</text>
+                    <text size="medium" alignment="center middle" color={TEXT_COLOR} selectable={false}>Next Level: {calculateLevelProgress(user.currentXP).xpToNextLevel}</text>
                 </hstack>
 
                 <hstack width="100%" alignment="center middle" gap="small">
-                    <text size="medium" alignment="center middle" color={TEXT_COLOR}>Total Wins: {user.winRate}</text>
-                    <text size="medium" alignment="center middle" color={TEXT_COLOR}>Total Losses: {user.loseRate}</text>
+                    <text size="medium" alignment="center middle" color={TEXT_COLOR} selectable={false}>Total Wins: {user.winRate}</text>
+                    <text size="medium" alignment="center middle" color={TEXT_COLOR} selectable={false}>Total Losses: {user.loseRate}</text>
                 </hstack>
 
                 <vstack height="120px" alignment="center bottom" gap="small">

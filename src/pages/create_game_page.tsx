@@ -1,5 +1,7 @@
 import { Devvit } from '@devvit/public-api';
 
+const TEXT_COLOR = '#000000';
+
 interface CreateGamePageProps {
     onBackToMenu: () => void;
     onOpenCreateBySeedPage: () => void;
@@ -25,13 +27,13 @@ export function CreateGamePage({ onBackToMenu, onOpenCreateBySeedPage, onStartGa
                 resizeMode='none'
             />
 
-            <hstack width="95%" height="95%" alignment="start top" gap="medium">
+            <hstack width="98%" height="98%" alignment="start top" gap="medium">
                 <image url='buttons/b_back.png' description='Back Button' imageHeight={40} imageWidth={40} resizeMode='none' onPress={onBackToMenu} />
             </hstack>
 
-            <vstack height="100%" width="100%" alignment="center middle" gap="medium">
-                <text size="xlarge" weight="bold">Use a seed or generate a random game</text>
+            <text height="150px" width="300px" alignment="center top" size="xlarge" wrap={true} selectable={false} color={TEXT_COLOR}>Start a game with a seed to play a specific setup or generate a random one to explore new challenges!</text>
 
+            <vstack height="300px" width="420px" alignment="center bottom" gap="small">
                 <image url='buttons/b_generate_using_game_seed.png' description='Generate using game seed button' imageHeight={40} imageWidth={328} resizeMode='none' onPress={onOpenCreateBySeedPage} />
                 <image url='buttons/b_start_random_game.png' description='Start a random game button' imageHeight={40} imageWidth={256} resizeMode='none' onPress={() => onStartGame("------")} />
             </vstack>

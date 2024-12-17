@@ -97,7 +97,6 @@ export function RouterPage({ context }: RouterPageProps) {
                     columnPosition: 0,
                     assetPath: `cards/card_${suit}_${rank}.png`,
                     cardLvlPath: "card_levels/card_level_1.png",
-                    dustAnimationState: 0,
                 });
             }
         }
@@ -161,7 +160,7 @@ export function RouterPage({ context }: RouterPageProps) {
                 onStartGame={(seed: string) => onStartGame(seed)}
             />}
 
-            {scoreLoading && <ProgressIndicatorComponent />}
+            {scoreLoading && <ProgressIndicatorComponent isDarkBackground={true} />}
         </zstack>
     );
 }

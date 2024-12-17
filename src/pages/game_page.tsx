@@ -14,6 +14,8 @@ import { StopGameDialogComponent } from '../components/StopGameDialogComponent.j
 import { DefeatDialogComponent } from '../components/DefeatDialogComponent.js';
 import { VictoryDialogComponent } from '../components/VictoryDialogComponent.js';
 
+const TEXT_COLOR = '#000000';
+
 interface GamePageProps {
     gameSeed: string;
     user: UserModel;
@@ -207,9 +209,6 @@ export function GamePage({ gameSeed, user, isCompletedGame, postData, cards, onB
                         }
 
                         let movedCards = updatedColumns[selectedCard.columnPosition].slice(-selectedCards.length);
-                        for (const card of movedCards) {
-                            card.dustAnimationState = 3;
-                        }
                         updatedColumns[selectedCard.columnPosition] = updatedColumns[selectedCard.columnPosition].slice(0, -selectedCards.length);
                         updatedColumns[index] = [...updatedColumns[index], ...movedCards];
 
@@ -413,29 +412,37 @@ export function GamePage({ gameSeed, user, isCompletedGame, postData, cards, onB
                 resizeMode='none'
             />
 
-            <vstack height="95%" width="95%" alignment="center top" gap='small'>
-                <zstack width="100%" height="50px" alignment="center middle">
+            <vstack height="98%" width="98%" alignment="center top" gap='small'>
+                <zstack width="100%" height="70px" alignment="center middle" gap="none">
                     <hstack width="100%" alignment="start middle" gap="medium">
                         <image url='buttons/b_back.png' description='Back Button' imageHeight={40} imageWidth={40} resizeMode='none' onPress={() => setStopDialogShow(true)} />
                     </hstack>
                     <hstack width="100%" alignment="end middle" gap="medium">
-                        <button width="20px" height="20px" onPress={() => setIsGameEnd(GameStatus.Victory)}>TestV</button>
-                        <button width="20px" height="20px" onPress={() => setIsGameEnd(GameStatus.Defeat)}>TestD</button>
-
                         <image url='buttons/b_question.png' description='Back Button' imageHeight={40} imageWidth={40} resizeMode='none' onPress={() => setIsRulesShow(true)} />
                     </hstack>
 
-                    <vstack width="100px" alignment="center middle" gap="none">
-                        <text size="medium" weight="bold">Supermoves: {supermoves}</text>
-                        <text size="medium" weight="bold">Game: {postData?.gameSeed == null ? gameSeed : "******"}</text>
-                        <TimerComponent
-                            size="medium"
-                            getTotalTime={(totalTime: number) => setTime(totalTime)}
-                            isKeepGoing={isEndGame == GameStatus.InProgress}
-                            totalTime={postData?.totalTime != null ? Number(postData?.totalTime) : null}
-                            stopGame={() => setIsGameEnd(GameStatus.Defeat)}
+                    <zstack width="100%" height="100%" alignment="center middle">
+
+                        <image
+                            url='interface_background/game_info_background.png'
+                            description='Game info background'
+                            imageHeight={69}
+                            imageWidth={132}
+                            resizeMode='none'
                         />
-                    </vstack>
+
+                        <vstack width="100px" alignment="center middle" gap="none">
+                            <text size="medium" weight="bold" color={TEXT_COLOR} selectable={false}>Supermoves: {supermoves}</text>
+                            <text size="medium" weight="bold" color={TEXT_COLOR} selectable={false}>Game: {postData?.gameSeed == null ? gameSeed : "******"}</text>
+                            <TimerComponent
+                                size="medium"
+                                getTotalTime={(totalTime: number) => setTime(totalTime)}
+                                isKeepGoing={isEndGame == GameStatus.InProgress}
+                                totalTime={postData?.totalTime != null ? Number(postData?.totalTime) : null}
+                                stopGame={() => setIsGameEnd(GameStatus.Defeat)}
+                            />
+                        </vstack>
+                    </zstack>
                 </zstack>
 
                 {/* Empty and Foundation cells */}

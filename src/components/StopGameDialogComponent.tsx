@@ -21,22 +21,18 @@ export function StopGameDialogComponent({ onBackToMenu, onDialogClose }: StopGam
             />
 
             <image
-                url='white_pixel.png'
-                description='White pixel to set the dialog background'
-                imageHeight={1}
-                imageWidth={1}
-                height="150px"
-                width="400px"
-                resizeMode='fill'
+                url='interface_background/small_dialog_background.png'
+                description='Dialog background'
+                imageHeight={410}
+                imageWidth={410}
+                resizeMode='none'
             />
 
-            <vstack height="100%" width="350px" alignment="center middle" gap="medium">
-                <text size="large" wrap={true} weight="bold" color={TEXT_COLOR}>Hold on! Leaving the game now means losing your progress. Do you want to go back to the menu?</text>
+            <text height="150px" width="300px" alignment="center top" size="xlarge" wrap={true} selectable={false} color={TEXT_COLOR}>Hold on! Leaving the game now means losing your progress. Do you want to go back to the menu?</text>
 
-                <hstack width="100%" alignment="center middle" gap="small">
-                    <image url='buttons/b_exit_to_menu.png' description='Exit to menu button' imageHeight={40} imageWidth={203} resizeMode='none' onPress={onBackToMenu} />
-                    <image url='buttons/b_continue_playing.png' description='Continue playing button' imageHeight={40} imageWidth={219} resizeMode='none' onPress={onDialogClose} />
-                </hstack>
+            <vstack height="230px" width="420px" alignment="center bottom" gap="small">
+                <image url='buttons/b_exit_to_menu.png' description='Exit to menu button' imageHeight={40} imageWidth={203} resizeMode='none' onPress={onBackToMenu} />
+                <image url='buttons/b_continue_playing.png' description='Continue playing button' imageHeight={40} imageWidth={219} resizeMode='none' onPress={onDialogClose} />
             </vstack>
         </zstack>
     );

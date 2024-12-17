@@ -1,6 +1,8 @@
 import { Devvit, useState, useInterval } from '@devvit/public-api';
 import { formatTime } from '../utils/time_utils.js';
 
+const TEXT_COLOR = '#000000';
+
 interface TimerComponentProps {
     size: Devvit.Blocks.TextSize
     getTotalTime: (totalTime: number) => void;
@@ -29,7 +31,7 @@ export function TimerComponent({ size, isKeepGoing, getTotalTime, totalTime, sto
     }, 1000).start();
 
     return (
-        <text size={size} weight="bold">{formatTime(secondsValue)}</text>
+        <text size={size} weight="bold" color={TEXT_COLOR} selectable={false}>{formatTime(secondsValue)}</text>
     );
 };
 

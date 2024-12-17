@@ -10,5 +10,4 @@ export type PlayingCard = {
     columnPosition: number;
     assetPath: string;
     cardLvlPath: string;
-    dustAnimationState: number;
 };

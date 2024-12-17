@@ -19,7 +19,7 @@ Devvit.addMenuItem({
       title: 'A Moment of Calm with Every Move :)',
       subredditName: subreddit.name,
       // The preview appears while the post loads
-      preview: (<ProgressIndicatorComponent />),
+      preview: (<ProgressIndicatorComponent isDarkBackground={true} />),
     });
     ui.showToast({ text: 'Created post!' });
   },
