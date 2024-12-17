@@ -14,8 +14,6 @@ import { StopGameDialogComponent } from '../components/StopGameDialogComponent.j
 import { DefeatDialogComponent } from '../components/DefeatDialogComponent.js';
 import { VictoryDialogComponent } from '../components/VictoryDialogComponent.js';
 
-const BUTTON_SIZE = "40px";
-
 interface GamePageProps {
     gameSeed: string;
     user: UserModel;
@@ -407,16 +405,24 @@ export function GamePage({ gameSeed, user, isCompletedGame, postData, cards, onB
 
     return (
         <zstack width="100%" height="100%" alignment="center middle">
+            <image
+                url='game_background.png'
+                description='Game Background'
+                imageHeight={530}
+                imageWidth={777}
+                resizeMode='none'
+            />
+
             <vstack height="95%" width="95%" alignment="center top" gap='small'>
                 <zstack width="100%" height="50px" alignment="center middle">
                     <hstack width="100%" alignment="start middle" gap="medium">
-                        <button width={BUTTON_SIZE} height={BUTTON_SIZE} onPress={() => setStopDialogShow(true)}>🠜</button>
+                        <image url='buttons/b_back.png' description='Back Button' imageHeight={40} imageWidth={40} resizeMode='none' onPress={() => setStopDialogShow(true)} />
                     </hstack>
                     <hstack width="100%" alignment="end middle" gap="medium">
                         <button width="20px" height="20px" onPress={() => setIsGameEnd(GameStatus.Victory)}>TestV</button>
                         <button width="20px" height="20px" onPress={() => setIsGameEnd(GameStatus.Defeat)}>TestD</button>
 
-                        <button width={BUTTON_SIZE} height={BUTTON_SIZE} onPress={() => setIsRulesShow(true)}>?</button>
+                        <image url='buttons/b_question.png' description='Back Button' imageHeight={40} imageWidth={40} resizeMode='none' onPress={() => setIsRulesShow(true)} />
                     </hstack>
 
                     <vstack width="100px" alignment="center middle" gap="none">
@@ -467,7 +473,7 @@ export function GamePage({ gameSeed, user, isCompletedGame, postData, cards, onB
                 <StopGameDialogComponent onBackToMenu={onBackToMenu} onDialogClose={() => setStopDialogShow(false)} />
             )}
 
-            {isEndGame == GameStatus.Victory && gotTime && (
+            {isEndGame == GameStatus.Victory && gotTime != null && (
                 <VictoryDialogComponent
                     onDialogClose={onBackToMenu}
                     totalTime={gotTime}
@@ -480,7 +486,7 @@ export function GamePage({ gameSeed, user, isCompletedGame, postData, cards, onB
                 />
             )}
 
-            {isEndGame == GameStatus.Defeat && gotTime && (
+            {isEndGame == GameStatus.Defeat && gotTime != null && (
                 <DefeatDialogComponent
                     onDialogClose={onBackToMenu}
                     totalTime={gotTime}

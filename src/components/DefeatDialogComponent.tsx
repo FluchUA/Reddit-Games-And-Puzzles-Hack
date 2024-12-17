@@ -86,7 +86,7 @@ export function DefeatDialogComponent({ onDialogClose, totalTime, user, redisCli
                     (<text width="310px" size="medium" color={TEXT_COLOR} alignment="center middle" wrap={true}>No more moves are available! Unfortunately, this means the game has come to an end. Better luck next time!</text>)
                     : (<text width="310px" size="medium" color={TEXT_COLOR} alignment="center middle" wrap={true}>Unfortunately, your time has run out</text>)}
 
-                <button appearance="primary" onPress={onDialogClose}>OK</button>
+                <image url='buttons/b_ok.png' description='Ok button' imageHeight={40} imageWidth={41} resizeMode='none' onPress={onDialogClose} />
             </vstack>
 
             {scoreLoading && <ProgressIndicatorComponent />}

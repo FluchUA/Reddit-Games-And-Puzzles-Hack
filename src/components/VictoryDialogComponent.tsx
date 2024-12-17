@@ -83,7 +83,6 @@ export function VictoryDialogComponent({ onDialogClose, totalTime, gameSeed, isC
             preview: (<ProgressIndicatorComponent />),
         });
 
-        console.log(`NEW subpost:${subpost.id}`);
         await redisClient.hSet(`subpost:${subpost.id}`, {
             subpostID: subpost.id,
             totalTime: totalTime.toString(),
@@ -137,7 +136,7 @@ export function VictoryDialogComponent({ onDialogClose, totalTime, gameSeed, isC
                 </hstack>
 
                 <hstack height="80px" width="100%" alignment="center middle" gap="small">
-                    <button appearance="primary" onPress={onDialogClose}>OK</button>
+                    <image url='buttons/b_ok.png' description='Ok button' imageHeight={40} imageWidth={41} resizeMode='none' onPress={onDialogClose} />
                     {!isCompletedGame && postData?.subpostID == null && <button appearance="primary" onPress={onCreatePost}>Create Post (+{SHARE_XP_VALUE}XP)</button>}
                 </hstack>
             </vstack>

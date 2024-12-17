@@ -16,18 +16,24 @@ export function MainMenuPage({ user, onStartGame, }: MainMenuPageProps) {
     return (
         <zstack height="100%" width="100%" alignment="center middle" gap="medium">
             <image
-                url='dark_transparent_pixel.png'
-                description='Semi-transparent pixel to darken the background'
-                imageHeight={1}
-                imageWidth={1}
-                height="420px"
-                width="420px"
-                resizeMode='fill'
+                url='background.png'
+                description='Background'
+                imageHeight={530}
+                imageWidth={777}
+                resizeMode='none'
+            />
+
+            <image
+                url='interface_background/dialog_background1.png'
+                description='Dialog background'
+                imageHeight={420}
+                imageWidth={420}
+                resizeMode='none'
             />
 
             <vstack height="100%" width="100%" alignment="center middle" gap="medium">
                 <text size="xxlarge" color={TEXT_COLOR}>Hi, {user.name}! {calculateLevelProgress(user.currentXP).level}LVL</text>
-                <text size="xxlarge" height="50px" alignment="center top" color={TEXT_COLOR}>Let’s see what you can achieve today!</text>
+                <text size="xlarge" height="50px" alignment="center top" color={TEXT_COLOR}>Let’s see what you can achieve today!</text>
 
                 <hstack width="100%" alignment="center middle" gap="small">
                     <text size="medium" alignment="center middle" color={TEXT_COLOR}>XP: {user.currentXP}</text>
@@ -39,9 +45,9 @@ export function MainMenuPage({ user, onStartGame, }: MainMenuPageProps) {
                     <text size="medium" alignment="center middle" color={TEXT_COLOR}>Total Losses: {user.loseRate}</text>
                 </hstack>
 
-                <vstack height="120px" alignment="center bottom" gap="medium">
-                    <button appearance="primary" onPress={onStartGame}>Start Game</button>
-                    <button appearance="primary" onPress={() => setIsRulesShow(true)}>Game Rules</button>
+                <vstack height="120px" alignment="center bottom" gap="small">
+                    <image url='buttons/b_start_game.png' description='Start Game button' imageHeight={40} imageWidth={137} resizeMode='none' onPress={onStartGame} />
+                    <image url='buttons/b_game_rules.png' description='Game Rules button' imageHeight={40} imageWidth={149} resizeMode='none' onPress={() => setIsRulesShow(true)} />
                 </vstack>
             </vstack>
 

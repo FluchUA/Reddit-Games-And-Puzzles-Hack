@@ -14,13 +14,19 @@ export function SubpostPage({ user, postData, onStartGame }: SubpostPageProps) {
     return (
         <zstack height="100%" width="100%" alignment="center middle" gap="medium">
             <image
-                url='dark_transparent_pixel.png'
-                description='Semi-transparent pixel to darken the background'
-                imageHeight={1}
-                imageWidth={1}
-                height="420px"
-                width="420px"
-                resizeMode='fill'
+                url='background.png'
+                description='Background'
+                imageHeight={530}
+                imageWidth={777}
+                resizeMode='none'
+            />
+
+            <image
+                url='interface_background/dialog_background1.png'
+                description='Dialog background'
+                imageHeight={420}
+                imageWidth={420}
+                resizeMode='none'
             />
 
             {postData != undefined && <vstack height="100%" width="310px" alignment="center middle" gap="small">
@@ -57,6 +63,7 @@ export function SubpostPage({ user, postData, onStartGame }: SubpostPageProps) {
 
                 {!user.wonSubposts.includes(postData.subpostID)
                     && !user.lostSubposts.includes(postData.subpostID)
+                    && user.id != postData?.userID
                     && <button appearance="primary" onPress={() => onStartGame(postData.gameSeed)}>Enter the Challenge</button>}
             </vstack>}
         </zstack>

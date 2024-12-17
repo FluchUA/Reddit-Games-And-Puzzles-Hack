@@ -1,6 +1,5 @@
 import { Devvit, useState } from '@devvit/public-api';
 
-const BUTTON_SIZE = "40px";
 const TEXT_COLOR = '#000000';
 
 interface CreateGameBySeedPageProps {
@@ -39,19 +38,25 @@ export function CreateGameBySeedPage({ onBackToMenu, onStartGame }: CreateGameBy
     };
 
     return (
-        <zstack height="95%" width="95%" alignment="center middle" gap="medium">
+        <zstack height="100%" width="100%" alignment="center middle" gap="medium">
             <image
-                url='dark_transparent_pixel.png'
-                description='Semi-transparent pixel to darken the background'
-                imageHeight={1}
-                imageWidth={1}
-                height="420px"
-                width="420px"
-                resizeMode='fill'
+                url='background.png'
+                description='Background'
+                imageHeight={530}
+                imageWidth={777}
+                resizeMode='none'
             />
 
-            <hstack width="100%" height="100%" alignment="start top" gap="medium">
-                <button width={BUTTON_SIZE} height={BUTTON_SIZE} onPress={onBackToMenu}>🠜</button>
+            <image
+                url='interface_background/dialog_background1.png'
+                description='Dialog background'
+                imageHeight={420}
+                imageWidth={420}
+                resizeMode='none'
+            />
+
+            <hstack width="95%" height="95%" alignment="start top" gap="medium">
+                <image url='buttons/b_back.png' description='Back Button' imageHeight={40} imageWidth={40} resizeMode='none' onPress={onBackToMenu} />
             </hstack>
 
             <vstack height="100%" width="310px" alignment="center middle" gap="small">
@@ -60,24 +65,24 @@ export function CreateGameBySeedPage({ onBackToMenu, onStartGame }: CreateGameBy
                 <text size="xxlarge" weight="bold" color={TEXT_COLOR}>{seed}</text>
 
                 <hstack alignment="center middle" gap="small">
-                    <button width={BUTTON_SIZE} height={BUTTON_SIZE} appearance="primary" onPress={() => onNumberPressed(1)}>1</button>
-                    <button width={BUTTON_SIZE} height={BUTTON_SIZE} appearance="primary" onPress={() => onNumberPressed(2)}>2</button>
-                    <button width={BUTTON_SIZE} height={BUTTON_SIZE} appearance="primary" onPress={() => onNumberPressed(3)}>3</button>
-                    <button width={BUTTON_SIZE} height={BUTTON_SIZE} appearance="primary" onPress={() => onNumberPressed(4)}>4</button>
-                    <button width={BUTTON_SIZE} height={BUTTON_SIZE} appearance="primary" onPress={() => onNumberPressed(5)}>5</button>
-                    <button width={BUTTON_SIZE} height={BUTTON_SIZE} appearance="primary" onPress={() => onNumberPressed(6)}>6</button>
+                    <image url='buttons/b_1.png' description='Button 1' imageHeight={40} imageWidth={40} resizeMode='none' onPress={() => onNumberPressed(1)} />
+                    <image url='buttons/b_2.png' description='Button 2' imageHeight={40} imageWidth={40} resizeMode='none' onPress={() => onNumberPressed(2)} />
+                    <image url='buttons/b_3.png' description='Button 3' imageHeight={40} imageWidth={40} resizeMode='none' onPress={() => onNumberPressed(3)} />
+                    <image url='buttons/b_4.png' description='Button 4' imageHeight={40} imageWidth={40} resizeMode='none' onPress={() => onNumberPressed(4)} />
+                    <image url='buttons/b_5.png' description='Button 5' imageHeight={40} imageWidth={40} resizeMode='none' onPress={() => onNumberPressed(5)} />
+                    <image url='buttons/b_6.png' description='Button 6' imageHeight={40} imageWidth={40} resizeMode='none' onPress={() => onNumberPressed(6)} />
                 </hstack>
 
                 <hstack alignment="center middle" gap="small">
-                    <button width={BUTTON_SIZE} height={BUTTON_SIZE} appearance="primary" onPress={() => onCancelPressed()}>←</button>
-                    <button width={BUTTON_SIZE} height={BUTTON_SIZE} appearance="primary" onPress={() => onNumberPressed(7)}>7</button>
-                    <button width={BUTTON_SIZE} height={BUTTON_SIZE} appearance="primary" onPress={() => onNumberPressed(8)}>8</button>
-                    <button width={BUTTON_SIZE} height={BUTTON_SIZE} appearance="primary" onPress={() => onNumberPressed(9)}>9</button>
-                    <button width={BUTTON_SIZE} height={BUTTON_SIZE} appearance="primary" onPress={() => onNumberPressed(0)}>0</button>
-                    <button width={BUTTON_SIZE} height={BUTTON_SIZE} appearance="primary" onPress={() => onResetPressed()}>X</button>
+                    <image url='buttons/b_clear.png' description='Cancel Button' imageHeight={40} imageWidth={40} resizeMode='none' onPress={() => onCancelPressed()} />
+                    <image url='buttons/b_7.png' description='Button 7' imageHeight={40} imageWidth={40} resizeMode='none' onPress={() => onNumberPressed(7)} />
+                    <image url='buttons/b_8.png' description='Button 8' imageHeight={40} imageWidth={40} resizeMode='none' onPress={() => onNumberPressed(8)} />
+                    <image url='buttons/b_9.png' description='Button 9' imageHeight={40} imageWidth={40} resizeMode='none' onPress={() => onNumberPressed(9)} />
+                    <image url='buttons/b_0.png' description='Button 0' imageHeight={40} imageWidth={40} resizeMode='none' onPress={() => onNumberPressed(0)} />
+                    <image url='buttons/b_X.png' description='Clear Button' imageHeight={40} imageWidth={40} resizeMode='none' onPress={() => onResetPressed()} />
                 </hstack>
 
-                <button appearance="primary" onPress={() => onStartGame(seed)}>Start Game</button>
+                <image url='buttons/b_start_game.png' description='Start Game button' imageHeight={40} imageWidth={137} resizeMode='none' onPress={() => onStartGame(seed)} />
             </vstack>
         </zstack>
     );

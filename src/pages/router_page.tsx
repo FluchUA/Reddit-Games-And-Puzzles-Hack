@@ -104,12 +104,14 @@ export function RouterPage({ context }: RouterPageProps) {
 
         // Card level calculation
         const shuffledDeck = [...deck].sort(() => random() - 0.5);
+
         const recordsWon = (combinedData?.user ?? user).recordsWon > 208 ? 208 : (combinedData?.user ?? user).recordsWon;
-        const generalCardLevel = Math.ceil(recordsWon / 52);
+        let generalCardLevel = Math.ceil(recordsWon / 52);
         const newLvlCardCount = recordsWon - Math.floor(recordsWon / 52) * 52;
-        
+        generalCardLevel = generalCardLevel == 0 ? 1 : generalCardLevel;
+
         for (let i = 0; i < shuffledDeck.length; i++) {
-            shuffledDeck[i].cardLvlPath = `card_levels/card_level_${generalCardLevel + (i < newLvlCardCount ? 1 : 0)}.png`;
+            shuffledDeck[i].cardLvlPath = `card_levels/card_level_${i < newLvlCardCount ? generalCardLevel + 1 : generalCardLevel}.png`;
         }
 
         let newCardColumns: PlayingCard[][] = Array.from({ length: 8 }, () => []);

@@ -34,8 +34,8 @@ export function StopGameDialogComponent({ onBackToMenu, onDialogClose }: StopGam
                 <text size="large" wrap={true} weight="bold" color={TEXT_COLOR}>Hold on! Leaving the game now means losing your progress. Do you want to go back to the menu?</text>
 
                 <hstack width="100%" alignment="center middle" gap="small">
-                    <button appearance="primary" onPress={onBackToMenu}>Exit to the menu</button>
-                    <button appearance="primary" onPress={onDialogClose}>Continue playing</button>
+                    <image url='buttons/b_exit_to_menu.png' description='Exit to menu button' imageHeight={40} imageWidth={203} resizeMode='none' onPress={onBackToMenu} />
+                    <image url='buttons/b_continue_playing.png' description='Continue playing button' imageHeight={40} imageWidth={219} resizeMode='none' onPress={onDialogClose} />
                 </hstack>
             </vstack>
         </zstack>

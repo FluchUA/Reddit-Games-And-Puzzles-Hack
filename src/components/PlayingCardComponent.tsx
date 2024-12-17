@@ -56,7 +56,7 @@ export function PlayingCardComponent({ card, cardIndex }: PlayingCardProps) {
                 <image
                     url={card.assetPath}
                     description={`${card.rank} of ${card.suit}`}
-                    imageHeight={62}
+                    imageHeight={61}
                     imageWidth={45}
                     resizeMode='none'
                 />
@@ -93,10 +93,10 @@ export function PlayingCardComponent({ card, cardIndex }: PlayingCardProps) {
                         resizeMode='none'
                     />
                     <image
-                        url='logo.png'
+                        url='cards/selected_card.png'
                         description='Selected card overlay'
-                        imageHeight={40}
-                        imageWidth={40}
+                        imageHeight={61}
+                        imageWidth={45}
                         resizeMode='none'
                     />
                 </vstack>
