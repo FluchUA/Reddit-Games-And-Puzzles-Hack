@@ -26,9 +26,19 @@ Our design includes:
 - **Building Foundations**: To move cards to foundation piles, start with an **Ace** and continue in **suit order** up to the King.
 - **Super Moves**: Use free cells and empty columns to move multiple cards in sequence. The more free cells and empty columns available, the larger the sequence you can move at once.
 
+The game has the ability to create a game by setting it to seed, so players can grain and play the same game.
+
 ## **Winning the Game**
 
 Your goal is to move all cards from the columns and free cells to the foundation piles. You win when all cards are organized into their respective suits.
+
+If a player passes a game he has already passed before, he will get less experience points. A small amount of experience is also awarded for losing.
+
+## **Competitions**
+
+After the player wins the game, he will be offered to make a post with his time results for additional experience points. Other players will be able to try to beat the time record and get experience and a visual upgrade of the playing card level. There are 5 levels in total. Each next level opens when the previous one is completed. That is, the player needs to beat 52 time records to start getting upgrades of the next level. These visual upgrades are to show the player how cool he is.
+
+In a competitive game a player can win or lose only once, after that the post will display the corresponding text about winning or losing. Also displayed is the total number of players who were able to pass the time and who could not.
 
 ## **Features**
 

@@ -47,12 +47,12 @@ export function SubpostPage({ user, postData, onStartGame }: SubpostPageProps) {
                         <text size="xlarge" alignment="center middle" color={TEXT_COLOR} wrap={true} selectable={false}>Unfortunately, you didn’t win this time, but don’t give up! Learn from this and come back stronger—you’ve got what it takes to succeed!</text>
                     </vstack>
                 ) : (
-                    <vstack height="200px" width="300px" alignment="center middle" gap="small">
+                    <vstack height="210px" width="300px" alignment="center middle" gap="small">
                         <text size="xxlarge" weight="bold" color={TEXT_COLOR} selectable={false}>Player {postData.ownerInfoString}LVL</text>
                         <text size="xxlarge" weight="bold" color={TEXT_COLOR} selectable={false}>has set a new time record!</text>
                         <text size="xxlarge" weight="bold" color={TEXT_COLOR} selectable={false} height="50px">{formatTime(Number(postData.totalTime))}</text>
                         <text size="xxlarge" alignment="center middle" color={TEXT_COLOR} selectable={false}>Think you can beat it?</text>
-                        <text size="medium" alignment="center middle" color={TEXT_COLOR} selectable={false} wrap={true}>Finish the game faster to earn XP and gain a +1 upgrade to your card level</text>
+                        <text size="medium" alignment="center middle" color={TEXT_COLOR} selectable={false} wrap={true}>Finish the game faster to earn XP and gain +1 upgrade to your card level</text>
                     </vstack>
                 )}
 

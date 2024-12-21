@@ -431,7 +431,7 @@ export function GamePage({ gameSeed, user, isCompletedGame, postData, cards, onB
                             resizeMode='none'
                         />
 
-                        <vstack width="100px" alignment="center middle" gap="none">
+                        <vstack width="110px" alignment="center middle" gap="none">
                             <text size="medium" weight="bold" color={TEXT_COLOR} selectable={false}>Supermoves: {supermoves}</text>
                             <text size="medium" weight="bold" color={TEXT_COLOR} selectable={false}>Game: {postData?.gameSeed == null ? gameSeed : "******"}</text>
                             <TimerComponent
