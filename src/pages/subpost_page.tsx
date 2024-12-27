@@ -48,7 +48,7 @@ export function SubpostPage({ user, postData, onStartGame }: SubpostPageProps) {
                     </vstack>
                 ) : (
                     <vstack height="210px" width="300px" alignment="center middle" gap="small">
-                        <text size="xxlarge" weight="bold" color={TEXT_COLOR} selectable={false}>Player {postData.ownerInfoString}LVL</text>
+                        <text size="xxlarge" weight="bold" color={TEXT_COLOR} selectable={false} wrap={true}>Player {postData.ownerInfoString}LVL</text>
                         <text size="xxlarge" weight="bold" color={TEXT_COLOR} selectable={false}>has set a new time record!</text>
                         <text size="xxlarge" weight="bold" color={TEXT_COLOR} selectable={false} height="50px">{formatTime(Number(postData.totalTime))}</text>
                         <text size="xxlarge" alignment="center middle" color={TEXT_COLOR} selectable={false}>Think you can beat it?</text>

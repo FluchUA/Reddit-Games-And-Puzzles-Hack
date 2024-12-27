@@ -32,7 +32,7 @@ export function MainMenuPage({ user, onStartGame, }: MainMenuPageProps) {
             />
 
             <vstack height="100%" width="100%" alignment="center middle" gap="medium">
-                <text size="xxlarge" color={TEXT_COLOR} selectable={false}>Hi, {user.name}! {calculateLevelProgress(user.currentXP).level}LVL</text>
+                <text size="xxlarge" color={TEXT_COLOR} selectable={false} wrap={true}>Hi, {user.name}! {calculateLevelProgress(user.currentXP).level}LVL</text>
                 <text size="xlarge" height="50px" alignment="center top" color={TEXT_COLOR} selectable={false}>Let’s see what you can achieve today!</text>
 
                 <hstack width="100%" alignment="center middle" gap="small">
