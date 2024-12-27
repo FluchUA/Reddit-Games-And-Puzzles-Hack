@@ -52,3 +52,30 @@ In a competitive game a player can win or lose only once, after that the post wi
 - **Strategic Gameplay**: Perfect for players who enjoy games that test their skills and logic.
 - **Polished Design**: A visually appealing and immersive card game experience.
 - **Accessible Fun**: Simple controls and intuitive mechanics make it easy for anyone to pick up and play.
+
+Main menu<br/>
+![0](https://github.com/user-attachments/assets/af20daf6-6242-439f-9ac1-74b8d699a579)
+
+Game rules<br/>
+![1](https://github.com/user-attachments/assets/614ce2ee-e2b3-4512-a914-991639f8fa6f)
+
+Making a Game with seed<br/>
+![2](https://github.com/user-attachments/assets/deecc5ca-591b-4c57-82c0-d42eab466b02)
+
+Game<br/>
+![3](https://github.com/user-attachments/assets/98ec580e-6fe4-4281-bfad-c4a98ebb9046)
+
+Sub post after a win, giving users the chance to beat the time record and get a playing card level (visual)<br/>
+![4](https://github.com/user-attachments/assets/1182481a-0dcf-4259-85ee-423f2caa4f89)
+
+Subpost for the time competition<br/>
+![5](https://github.com/user-attachments/assets/9d038ae1-0f6f-4e97-9f0d-e23b8f959dce)
+
+What will the game cards look like when the user wins several times the time competition of other players<br/>
+![6](https://github.com/user-attachments/assets/8458cbaa-bd05-4968-b89f-84481ddcc037)
+
+Levels of game cards<br/>
+![7](https://github.com/user-attachments/assets/7940029e-a01d-4219-9c15-5bf6022e906d)
+
+Gameplay<br/>
+![game](https://github.com/user-attachments/assets/8d4cbdfa-36b5-44e9-92bc-fccd5b6e1c46)
