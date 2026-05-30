@@ -4,13 +4,13 @@ interface RulesDialogProps {
 
 export function RulesDialogComponent({ onDialogClose }: RulesDialogProps) {
     return (
-        // Внешнее затемнение на весь экран
+        // Background - dark
         <div className="modal-overlay">
 
-            {/* Окно диалога. Картинка-декор dialog_background2 теперь задана через CSS-фон */}
+            {/* Dialog background */}
             <div className="modal-dialog-box">
 
-                {/* Контейнер для текста со скроллом */}
+                {/* Content */}
                 <div className="modal-scroll-content">
                     <h2 className="modal-title">Rules for FreeCell</h2>
 
@@ -27,13 +27,8 @@ export function RulesDialogComponent({ onDialogClose }: RulesDialogProps) {
                         The goal of the game is to move all the cards from the columns and free cells to the foundation piles. The game is won when all cards are sorted into their respective suits.
                     </p>
 
-                    {/* Переиспользуем твой класс .clickable-button для ховер-эффектов */}
-                    <img
-                        src="/buttons/b_ok.png"
-                        alt="Ok button"
-                        className="clickable-button btn-ok"
-                        onClick={onDialogClose}
-                    />
+                    {/* Button */}
+                    <img src="/buttons/b_ok.png" alt="Ok button" className="clickable-button btn-ok" onClick={onDialogClose} />
                 </div>
             </div>
         </div>
