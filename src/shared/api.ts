@@ -6,15 +6,9 @@ export type UserRepsonse = {
 }
 
 export type UserDefeatResponse = {
-  currentXP: number;
-  loseRate: number;
-  winRate: number;
-  recordsWon: number;
+  user: UserModel;
 }
 
 export type UserVictoryResponse = {
-  currentXP: number;
-  loseRate: number;
-  winRate: number;
-  recordsWon: number;
+  user: UserModel;
 }

@@ -26,7 +26,6 @@ export function VictoryDialogComponent({
 }: VictoryDialogProps) {
     const [userData, setUserData] = useState<UserModel | null>(null);
     const [loading, setLoading] = useState(true);
-    const [_, setError] = useState<string | null>(null);
 
     useEffect(() => {
         setLoading(true);
@@ -40,21 +39,9 @@ export function VictoryDialogComponent({
                 postData,
             }),
         })
-            .then((res) => res.json())
-            .then((data) => {
-                setUserData({
-                    ...user,
-                    currentXP: data.currentXP,
-                    winRate: data.winRate,
-                    loseRate: data.loseRate,
-                    recordsWon: data.recordsWon,
-                });
-                setLoading(false);
-            })
-            .catch((err) => {
-                setError(err.message);
-                setLoading(false);
-            });
+            .then(res => res.json())
+            .then(data => setUserData(data.user))
+            .finally(() => setLoading(false));
     }, []);
 
     async function onCreatePost() {

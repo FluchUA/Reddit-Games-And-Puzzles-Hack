@@ -109,11 +109,23 @@ api.post('/defeat', async (c) => {
     await redis.zAdd(`lostSubposts:${redditUser.id}`, ...members);
   }
 
+  /// Retrieve the user's current, updated data
+  const lostSubpostsAfter = await redis.zRange(`lostSubposts:${redditUser.id}`, 0, -1);
+  const wonSubposts = await redis.zRange(`wonSubposts:${redditUser.id}`, 0, -1);
+  const completedGames = await redis.zRange(`completedGames:${redditUser.id}`, 0, -1);
+
   return c.json<UserDefeatResponse>({
-    currentXP: currentXP,
-    loseRate: loseRate,
-    winRate: Number(userDetails?.winRate ?? 0),
-    recordsWon: Number(userDetails?.recordsWon ?? 0),
+    user: {
+      id: redditUser.id,
+      name: redditUser.username,
+      currentXP,
+      loseRate,
+      winRate: Number(userDetails?.winRate ?? 0),
+      recordsWon: Number(userDetails?.recordsWon ?? 0),
+      lostSubposts: lostSubpostsAfter.map(i => i.member),
+      wonSubposts: wonSubposts.map(i => i.member),
+      completedGames: completedGames.map(i => i.member),
+    }
   });
 });
 
@@ -124,6 +136,17 @@ api.post('/victory', async (c) => {
 
   const VICTORY_XP_VALUE = 300;
   const SECOND_VICTORY_XP_VALUE = 15;
+
+  const redditUser = await reddit.getCurrentUser();
+  if (!redditUser) {
+    return c.json<ErrorResponse>(
+      {
+        status: 'error',
+        message: 'Not logged in',
+      },
+      401
+    );
+  }
 
   const xpGain = isCompletedGame ? SECOND_VICTORY_XP_VALUE : VICTORY_XP_VALUE;
 
@@ -165,11 +188,23 @@ api.post('/victory', async (c) => {
     await redis.zAdd(`wonSubposts:${userId}`, ...wonMembers);
   }
 
+  /// Retrieve the user's current, updated data
+  const wonSubpostsAfter = await redis.zRange(`wonSubposts:${userId}`, 0, -1);
+  const lostSubposts = await redis.zRange(`lostSubposts:${userId}`, 0, -1);
+  const completedGamesAfter = await redis.zRange(`completedGames:${userId}`, 0, -1);
+
   return c.json<UserVictoryResponse>({
-    currentXP: currentXP,
-    loseRate: loseRate,
-    winRate: winRate,
-    recordsWon: recordsWon,
+    user: {
+      id: userId,
+      name: redditUser?.username ?? '',
+      currentXP,
+      loseRate,
+      winRate,
+      recordsWon,
+      wonSubposts: wonSubpostsAfter.map(i => i.member),
+      lostSubposts: lostSubposts.map(i => i.member),
+      completedGames: completedGamesAfter.map(i => i.member),
+    }
   });
 });
 
