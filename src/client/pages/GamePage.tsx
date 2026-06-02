@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import { PlayingCard } from '../models/PlayingCard.js';
 import { UserModel } from '../../shared/models/UserModel.js';
