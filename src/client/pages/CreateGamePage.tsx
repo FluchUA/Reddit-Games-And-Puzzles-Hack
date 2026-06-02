@@ -18,7 +18,7 @@ export function CreateGamePage({ onBackToMenu, onOpenCreateBySeedPage, onStartGa
             <div className="content-layer">
 
                 {/* Description */}
-                <p className="text-xxlarge bold-text text-center"> Start a game with a seed to play a specific setup or generate a random one to explore new challenges! </p>
+                <p className="text-xlarge bold-text text-center"> Start a game with a seed to play a specific setup or generate a random one to explore new challenges! </p>
 
                 {/* Buttons */}
                 <div className="buttons-container margin-top-medium">

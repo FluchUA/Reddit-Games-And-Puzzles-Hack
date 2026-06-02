@@ -40,8 +40,8 @@ export function MainMenuPage({ user, onStartGame }: MainMenuPageProps) {
 
                 {/* Buttons */}
                 <div className="buttons-container">
-                    <img src="/buttons/b_start_game.png" alt="Start Game button" className="clickable-button" onClick={onStartGame} />
-                    <img src="/buttons/b_game_rules.png" alt="Game Rules button" className="clickable-button" onClick={() => setIsRulesShow(true)} />
+                    <img src="/buttons/b_start_game.png" alt="Start Game button" className="clickable-button-medium" onClick={onStartGame} />
+                    <img src="/buttons/b_game_rules.png" alt="Game Rules button" className="clickable-button-medium" onClick={() => setIsRulesShow(true)} />
                 </div>
             </div>)}
 

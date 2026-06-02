@@ -34,7 +34,6 @@ export function GamePage({ gameSeed, user, isCompletedGame, postData, cards, onB
     const [foundationCells, setFoundationCells] = useState<(PlayingCard | null)[]>(Array(4).fill(null));
     const [selectedCards, setSelectedCards] = useState<PlayingCard[]>([]);
 
-    // --- Вся игровая логика остаётся без изменений ---
     function getMaxMovableCards(freeCellList: (PlayingCard | null)[], columnList: PlayingCard[][]): number {
         const freeCellsNumber = freeCellList.filter(cell => cell == null).length;
         const emptyCascades = columnList.filter(column => column.length == 0).length;
@@ -130,30 +129,39 @@ export function GamePage({ gameSeed, user, isCompletedGame, postData, cards, onB
         if (selectedCards.length === 0 && updatedColumn && updatedColumn.length == 0) return;
 
         if (selectedCards.length == 0) {
-            const currentCard = updatedColumns[index][updatedColumns[index].length - 1];
-            currentCard.columnPosition = index;
-            currentCard.isSelected = !currentCard.isSelected;
-            setSelectedCards([currentCard]);
-            setColumns(updatedColumns);
+            let columnItem = updatedColumns[index];
+            if (columnItem) {
+                const currentCard = columnItem[columnItem.length - 1];
+
+                if (currentCard) {
+                    currentCard.columnPosition = index;
+                    currentCard.isSelected = !currentCard.isSelected;
+                    setSelectedCards([currentCard]);
+                    setColumns(updatedColumns);
+                }
+            }
         } else {
             const selectedCard = selectedCards[0];
-            if (index == selectedCard.columnPosition) {
+            if (selectedCard && index == selectedCard.columnPosition) {
                 if (selectedCards.length < supermoves) {
-                    const nextCardIndex = updatedColumns[index].length - selectedCards.length - 1;
-                    if (nextCardIndex >= 0) {
-                        const nextCard = updatedColumns[index][nextCardIndex];
-                        const lastSelectedCard = selectedCards[selectedCards.length - 1];
-                        if (nextCard.isRed != lastSelectedCard.isRed && Number(nextCard.rank) == Number(lastSelectedCard.rank) + 1) {
-                            nextCard.isSelected = true;
-                            setSelectedCards(addToSelectedCard(nextCard));
-                            setColumns(updatedColumns);
+                    let columnItem = updatedColumns[index];
+                    if (columnItem) {
+                        const nextCardIndex = columnItem.length - selectedCards.length - 1;
+                        if (nextCardIndex >= 0) {
+                            const nextCard = columnItem[nextCardIndex];
+                            const lastSelectedCard = selectedCards[selectedCards.length - 1];
+                            if (nextCard && lastSelectedCard && nextCard.isRed != lastSelectedCard.isRed && Number(nextCard.rank) == Number(lastSelectedCard.rank) + 1) {
+                                nextCard.isSelected = true;
+                                setSelectedCards(addToSelectedCard(nextCard));
+                                setColumns(updatedColumns);
+                            } else {
+                                setColumns(unselectColumnByIndex(index));
+                                setSelectedCards([]);
+                            }
                         } else {
                             setColumns(unselectColumnByIndex(index));
                             setSelectedCards([]);
                         }
-                    } else {
-                        setColumns(unselectColumnByIndex(index));
-                        setSelectedCards([]);
                     }
                 } else {
                     setColumns(unselectColumnByIndex(index));
@@ -161,29 +169,36 @@ export function GamePage({ gameSeed, user, isCompletedGame, postData, cards, onB
                 }
             } else {
                 const lastSelectedCard = selectedCards[selectedCards.length - 1];
-                if (
-                    (updatedColumns[index].length > 0
-                        && updatedColumns[index][updatedColumns[index].length - 1].isRed != lastSelectedCard.isRed
-                        && Number(updatedColumns[index][updatedColumns[index].length - 1].rank) == Number(lastSelectedCard.rank) + 1)
-                    || updatedColumns[index].length == 0
+                let columnItem = updatedColumns[index];
+                if (lastSelectedCard && columnItem &&
+                    (columnItem.length > 0
+                        && columnItem[columnItem.length - 1]?.isRed != lastSelectedCard.isRed
+                        && Number(columnItem[columnItem.length - 1]?.rank) == Number(lastSelectedCard.rank) + 1)
+                    || columnItem?.length == 0
                 ) {
-                    if (selectedCard.isInFreeCell) {
+                    if (columnItem && selectedCard && selectedCard.isInFreeCell) {
                         selectedCard.isSelected = false;
                         selectedCard.isInFreeCell = false;
-                        updatedColumns[index] = [...updatedColumns[index], selectedCard];
+                        updatedColumns[index] = [...columnItem, selectedCard];
                         const updatedFreeCells = removeCardFromFreeCells(selectedCard);
                         setFreeCells(updatedFreeCells);
                         setColumns(updatedColumns);
                         setSelectedCards([]);
                         setSupermoves(getMaxMovableCards(updatedFreeCells, updatedColumns));
                     } else {
-                        for (const card of updatedColumns[selectedCard.columnPosition]) card.isSelected = false;
-                        const movedCards = updatedColumns[selectedCard.columnPosition].slice(-selectedCards.length);
-                        updatedColumns[selectedCard.columnPosition] = updatedColumns[selectedCard.columnPosition].slice(0, -selectedCards.length);
-                        updatedColumns[index] = [...updatedColumns[index], ...movedCards];
-                        setColumns(updatedColumns);
-                        setSelectedCards([]);
-                        setSupermoves(getMaxMovableCards(freeCells, updatedColumns));
+                        if (selectedCard) {
+                            let selectedCardColumnItem = updatedColumns[selectedCard.columnPosition];
+
+                            if (columnItem && selectedCardColumnItem) {
+                                for (const card of selectedCardColumnItem) card.isSelected = false;
+                                const movedCards = selectedCardColumnItem.slice(-selectedCards.length);
+                                updatedColumns[selectedCard.columnPosition] = selectedCardColumnItem.slice(0, -selectedCards.length);
+                                updatedColumns[index] = [...columnItem, ...movedCards];
+                                setColumns(updatedColumns);
+                                setSelectedCards([]);
+                                setSupermoves(getMaxMovableCards(freeCells, updatedColumns));
+                            }
+                        }
                     }
                 } else {
                     unselectSelectedCards();
@@ -195,7 +210,7 @@ export function GamePage({ gameSeed, user, isCompletedGame, postData, cards, onB
     const handleFreeCellClick = (index: number) => {
         if (selectedCards.length == 1) {
             const selectedCard = selectedCards[0];
-            if (selectedCard.rank != CardRank.Ace) {
+            if (selectedCard && selectedCard.rank != CardRank.Ace) {
                 if (freeCells[index] == null) {
                     selectedCard.isSelected = false;
                     if (selectedCard.isInFreeCell) {
@@ -230,7 +245,7 @@ export function GamePage({ gameSeed, user, isCompletedGame, postData, cards, onB
     const handleFoundationCellClick = (index: number) => {
         if (selectedCards.length == 1) {
             const selectedCard = selectedCards[0];
-            if (foundationCells[index] == null) {
+            if (selectedCard && foundationCells[index] == null) {
                 if (selectedCard.rank == CardRank.Ace) {
                     selectedCard.isSelected = false;
                     const updatedColumns = cutColumnByIndex(selectedCard.columnPosition, 1);
@@ -241,7 +256,7 @@ export function GamePage({ gameSeed, user, isCompletedGame, postData, cards, onB
                 } else {
                     unselectSelectedCards();
                 }
-            } else if (selectedCard.suit == foundationCells[index]!.suit) {
+            } else if (selectedCard && selectedCard.suit == foundationCells[index]!.suit) {
                 if (
                     (foundationCells[index]!.rank == CardRank.Ace && selectedCard.rank == CardRank.Two)
                     || Number(foundationCells[index]!.rank) + 1 == Number(selectedCard.rank)
@@ -276,9 +291,9 @@ export function GamePage({ gameSeed, user, isCompletedGame, postData, cards, onB
         for (const foundationCellsCard of foundationCellsList) {
             if (
                 foundationCellsCard != null &&
-                foundationCellsCard.suit == card.suit &&
-                ((foundationCellsCard.rank == CardRank.Ace && card.rank == CardRank.Two)
-                    || Number(foundationCellsCard.rank) + 1 == Number(card.rank))
+                foundationCellsCard.suit === card.suit &&
+                ((foundationCellsCard.rank === CardRank.Ace && card.rank === CardRank.Two)
+                    || Number(foundationCellsCard.rank) + 1 === Number(card.rank))
             ) {
                 return true;
             }
@@ -293,12 +308,15 @@ export function GamePage({ gameSeed, user, isCompletedGame, postData, cards, onB
         freeCellsNumber: number,
         emptyCascades: number
     ) {
-        // Проверка победы
+        // Checking the victory
         let isOrganized = true;
         for (const deck of columnList) {
             if (deck.length == 0) continue;
             for (let i = 0; i < deck.length - 1; i++) {
-                if (Number(deck[i].rank) < Number(deck[i + 1].rank)) {
+                let currentCard = deck[i];
+                let previousCard = deck[i + 1];
+
+                if (currentCard && previousCard && Number(currentCard.rank) < Number(previousCard.rank)) {
                     isOrganized = false;
                     break;
                 }
@@ -311,23 +329,24 @@ export function GamePage({ gameSeed, user, isCompletedGame, postData, cards, onB
             return;
         }
 
-        // Проверка поражения
+        // Checking for defeat
         if (freeCellsNumber == 0 && emptyCascades == 0) {
             for (const freeCellCard of freeCellList) {
                 if (freeCellCard != null) {
-                    if (freeCellCard.rank == CardRank.Ace || checkingPossibleMoveInFoundation(freeCellCard, foundationCellsList)) return;
+                    if (checkingPossibleMoveInFoundation(freeCellCard, foundationCellsList)) return;
                     for (const columnCard of columnList) {
                         const lastColumnCard = columnCard[columnCard.length - 1];
-                        if (Number(freeCellCard.rank) + 1 == Number(lastColumnCard.rank) && freeCellCard.isRed != lastColumnCard.isRed) return;
+                        if (lastColumnCard && Number(freeCellCard.rank) + 1 === Number(lastColumnCard.rank) && freeCellCard.isRed != lastColumnCard.isRed) return;
                     }
                 }
             }
             for (const columnCard of columnList) {
                 const lastColumnCard = columnCard[columnCard.length - 1];
-                if (lastColumnCard.rank == CardRank.Ace || checkingPossibleMoveInFoundation(lastColumnCard, foundationCellsList)) return;
+                if ((lastColumnCard && lastColumnCard.rank === CardRank.Ace) || (lastColumnCard && checkingPossibleMoveInFoundation(lastColumnCard, foundationCellsList))) return;
                 for (const card of columnList) {
                     const lastCard = card[card.length - 1];
-                    if (Number(lastCard.rank) == Number(lastColumnCard.rank) + 1 && lastCard.isRed != lastColumnCard.isRed) return;
+                    if (lastCard && lastColumnCard && lastCard === lastColumnCard) continue;
+                    if (lastCard && lastColumnCard && Number(lastCard.rank) === Number(lastColumnCard.rank) + 1 && lastCard.isRed != lastColumnCard.isRed) return;
                 }
             }
             setIsGameEnd(GameStatus.Defeat);
@@ -335,34 +354,23 @@ export function GamePage({ gameSeed, user, isCompletedGame, postData, cards, onB
     }
 
     return (
-        // Главный контейнер игрового поля с фоном из CSS
         <div className="game-screen-wrapper">
             <div className="game-inner-container">
 
-                {/* Верхняя панель управления */}
+                {/* Top Bar */}
                 <header className="game-top-bar">
-                    {/* Кнопка назад */}
-                    <img
-                        src="/buttons/b_back.png"
-                        alt="Back Button"
-                        className="clickable-button btn-bar-action"
-                        onClick={() => setStopDialogShow(true)}
-                    />
+                    {/* Back Button */}
+                    <img src="/buttons/b_back.png" alt="Back Button" className="clickable-button btn-back-top-left" onClick={() => setStopDialogShow(true)} />
 
-                    {/* Центральный плашка с инфой */}
+                    {/* Game Info Background */}
                     <div className="game-info-plate">
-                        <img
-                            src="/interface_background/game_info_background.png"
-                            alt="Game info background"
-                            className="info-plate-bg"
-                        />
+                        <img src="/interface_background/game_info_background.png" alt="Game info background" className="info-plate-bg" />
                         <div className="info-plate-content">
-                            <span className="info-text bold-text">Supermoves: {supermoves}</span>
-                            <span className="info-text bold-text">
-                                Game: {postData?.gameSeed == null ? gameSeed : '******'}
-                            </span>
+                            <span className="text-small bold-text">Supermoves: {supermoves}</span>
+                            <span className="text-small bold-text"> Game: {postData?.gameSeed == null ? gameSeed : '******'} </span>
+
+                            {/* Timer */}
                             <TimerComponent
-                                className="text-medium"
                                 getTotalTime={(totalTime: number) => setTime(totalTime)}
                                 isKeepGoing={isEndGame == GameStatus.InProgress}
                                 totalTime={postData?.totalTime != null ? Number(postData.totalTime) : null}
@@ -371,73 +379,45 @@ export function GamePage({ gameSeed, user, isCompletedGame, postData, cards, onB
                         </div>
                     </div>
 
-                    {/* Кнопка правил */}
-                    <img
-                        src="/buttons/b_question.png"
-                        alt="Rules Button"
-                        className="clickable-button btn-bar-action"
-                        onClick={() => setIsRulesShow(true)}
-                    />
+                    {/* Rules Button */}
+                    <img src="/buttons/b_question.png" alt="Rules Button" className="clickable-button btn-back-top-right" onClick={() => setIsRulesShow(true)} />
                 </header>
 
-                {/* Свободные и фундаментные ячейки (Верхний ряд) */}
-                <section className="slots-grid-row">
-                    {[...freeCells, ...foundationCells].map((cell, index) => {
-                        const isFreeCell = index < freeCells.length;
-                        return (
-                            <div
-                                key={index}
-                                className="slot-cell-trigger"
-                                onClick={() => isFreeCell ? handleFreeCellClick(index) : handleFoundationCellClick(index - freeCells.length)}
-                            >
-                                <CellComponent card={cell} isFreeCell={isFreeCell} />
-                            </div>
-                        );
-                    })}
-                </section>
+                {/* Free and foundation cells (Top row) */}
+                <div className="slots-background-wrapper">
+                    <section className="slots-grid-row">
+                        {[...freeCells, ...foundationCells].map((cell, index) => {
+                            const isFreeCell = index < freeCells.length;
+                            return (
+                                <div key={index} className="slot-cell-trigger" onClick={() => isFreeCell ? handleFreeCellClick(index) : handleFoundationCellClick(index - freeCells.length)} >
+                                    <CellComponent card={cell} isFreeCell={isFreeCell} />
+                                </div>
+                            );
+                        })}
+                    </section>
+                </div>
 
-                {/* Игровые колонки с картами (Нижняя часть поля) */}
+                {/* Game columns with cards (bottom part of the field) */}
                 <main className="columns-grid-area">
                     {columns.map((column, index) => (
-                        <div
-                            key={index}
-                            className="game-card-column"
-                            onClick={() => handleColumnClick(index)}
-                        >
-                            {column.map((card, cardIndex) => (
-                                <PlayingCardComponent key={cardIndex} card={card} cardIndex={cardIndex} />
-                            ))}
+                        <div key={index} className="game-card-column" onClick={() => handleColumnClick(index)} >
+                            {column.map((card, cardIndex) => (<PlayingCardComponent key={cardIndex} card={card} cardIndex={cardIndex} />))}
                         </div>
                     ))}
                 </main>
             </div>
 
-            {/* Слой диалоговых окон */}
+            {/* Rules Dialog */}
             {isRulesShow && <RulesDialogComponent onDialogClose={() => setIsRulesShow(false)} />}
 
-            {isStopDialogShow && (
-                <StopGameDialogComponent onBackToMenu={onBackToMenu} onDialogClose={() => setStopDialogShow(false)} />
-            )}
+            {/*Stop Game Dialog */}
+            {isStopDialogShow && (<StopGameDialogComponent onBackToMenu={onBackToMenu} onDialogClose={() => setStopDialogShow(false)} />)}
 
-            {isEndGame == GameStatus.Victory && gotTime != null && (
-                <VictoryDialogComponent
-                    onDialogClose={onBackToMenu}
-                    totalTime={gotTime}
-                    gameSeed={gameSeed}
-                    isCompletedGame={isCompletedGame}
-                    user={user}
-                    postData={postData}
-                />
-            )}
+            {/*Victory Dialog */}
+            {isEndGame == GameStatus.Victory && gotTime != null && (<VictoryDialogComponent onDialogClose={onBackToMenu} totalTime={gotTime} gameSeed={gameSeed} isCompletedGame={isCompletedGame} user={user} postData={postData} />)}
 
-            {isEndGame == GameStatus.Defeat && gotTime != null && (
-                <DefeatDialogComponent
-                    onDialogClose={onBackToMenu}
-                    totalTime={gotTime}
-                    user={user}
-                    postData={postData}
-                />
-            )}
-        </div>
+            {/*Defeat Dialog */}
+            {isEndGame == GameStatus.Defeat && gotTime != null && (<DefeatDialogComponent onDialogClose={onBackToMenu} totalTime={gotTime} user={user} postData={postData} />)}
+        </div >
     );
 }

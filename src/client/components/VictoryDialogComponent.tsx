@@ -76,13 +76,13 @@ export function VictoryDialogComponent({
             <div className="modal-dialog-box small-dialog">
 
                 {/* Content */}
-                <div className="modal-dialog-content">
+                <div className="small-modal-dialog-content">
 
                     {/* Title */}
                     <h2 className="text-xlarge bold-text"> Victory +{isCompletedGame ? SECOND_VICTORY_XP_VALUE : VICTORY_XP_VALUE}XP </h2>
 
                     {/* Time Value */}
-                    <p className="text-small bold-text"> Time: {formatTime(totalTime)} </p>
+                    <p className="text-medium bold-text margin-top-small"> Time: {formatTime(totalTime)} </p>
 
                     {/* Description */}
                     {isCompletedGame && (<p className="text-small margin-top-small margin-bottom-small"> Since you've already played this game, you've received a reduced amount of experience points</p>)}
@@ -93,14 +93,14 @@ export function VictoryDialogComponent({
                         <span>XP: {loading ? '-' : displayUser.currentXP}</span>
                         <span>Next Level: {loading ? '-' : xpToNextLevel}</span>
                     </div>
-                </div>
 
-                {/* Buttons */}
-                <div className="buttons-container">
-                    {!isCompletedGame && postData?.subpostID == null && (
-                        <img src="/buttons/b_create_post.png" alt="Create post button" className="clickable-button" onClick={onCreatePost} />
-                    )}
-                    <img src="/buttons/b_ok.png" alt="Ok button" className="clickable-button" onClick={onDialogClose} />
+                    {/* Buttons */}
+                    <div className="buttons-container margin-top-small">
+                        {!isCompletedGame && postData?.subpostID == null && (
+                            <img src="/buttons/b_create_post.png" alt="Create post button" className="clickable-button-medium" onClick={onCreatePost} />
+                        )}
+                        <img src="/buttons/b_ok.png" alt="Ok button" className="clickable-button-small" onClick={onDialogClose} />
+                    </div>
                 </div>
             </div>
 

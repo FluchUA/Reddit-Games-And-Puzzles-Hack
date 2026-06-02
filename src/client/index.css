@@ -2,6 +2,15 @@ body {
     margin: 0;
     padding: 0;
     overflow: hidden;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+img {
+    pointer-events: none;
+    -webkit-user-drag: none;
 }
 
 .main-container {
@@ -28,11 +37,9 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 80%;
-    height: 80%;
     object-fit: contain;
-    max-width: 700px;
-    min-width: 280px;
+    width: clamp(256px, 70vmin, 1000px) !important;
+    height: clamp(256px, 70vmin, 1000px) !important;
     z-index: 2;
 }
 
@@ -41,10 +48,8 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 80%;
-    height: 80%;
-    max-width: 700px;
-    min-width: 280px;
+    width: clamp(256px, 70vmin, 1000px) !important;
+    height: clamp(256px, 70vmin, 1000px) !important;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -62,22 +67,34 @@ body {
     gap: clamp(10px, 2vw, 20px);
 }
 
+.btn-seed-digit,
+.clickable-button,
+.clickable-button-medium,
+.clickable-button-small,
+.btn-back-top-left,
+.btn-back-top-right,
+.btn-bar-action,
+.slot-cell-trigger,
+.game-card-column {
+    pointer-events: auto !important;
+}
+
 /* /////// */
 /* Spinner */
 /* /////// */
 .loader-overlay {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 10;
+    z-index: 999 !important;
 
     background-image: url("/dark_background.png");
-    background-size: none;
+    background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
 }
@@ -90,6 +107,8 @@ body {
 .loader-spinner {
     width: 164px;
     height: 164px;
+    width: clamp(80px, 25vmin, 328px) !important;
+    height: clamp(80px, 25vmin, 328px) !important;
     object-fit: contain;
     user-select: none;
     pointer-events: none;
@@ -98,14 +117,6 @@ body {
 /* /////// */
 /* Indent */
 /* /////// */
-.gap-medium {
-    gap: 16px;
-}
-
-.gap-small {
-    gap: 8px;
-}
-
 .width-100 {
     width: 100%;
 }
@@ -134,7 +145,7 @@ body {
     margin: 0;
     padding: 0;
     text-align: center;
-    max-width: 70%;
+    max-width: 410px;
 }
 
 .text-xxlarge {
@@ -156,53 +167,12 @@ body {
     font-size: clamp(0.5rem, 2vmin, 2rem);
 }
 
-.text-center-top {
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-}
-
 .bold-text {
     font-weight: bold;
 }
 
 .text-center {
     text-align: center;
-}
-
-.text-black {
-    color: #000000;
-}
-
-/* ///////////// */
-/* Card Elements */
-/* ///////////// */
-
-.card-container {
-    position: relative;
-    width: clamp(35px, 6vmin, 45px);
-    height: clamp(47px, 8.13vmin, 61px);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.card-layer {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    z-index: 4;
-}
-
-.card-layer.card-level {
-    width: 22%;
-    height: 10%;
-    top: 4%;
-    left: 4%;
-    z-index: 5;
 }
 
 /* ///////////// */
@@ -224,12 +194,12 @@ body {
 
 .modal-dialog-box {
     position: relative;
-    width: clamp(280px, 60vmin, 470px);
-    height: clamp(280px, 60vmin, 470px);
+    width: clamp(250px, 50vmin, 1000px) !important;
+    height: clamp(250px, 50vmin, 1000px) !important;
     display: flex;
     justify-content: center;
     align-items: center;
-
+    flex-direction: column;
     background-image: url("/interface_background/dialog_background2.png");
     background-size: contain;
     background-position: center;
@@ -242,11 +212,10 @@ body {
     flex-direction: column;
     align-items: center;
     width: 85%;
-    max-height: 85%;
+    max-height: 60%;
     gap: clamp(6px, 1.5vmin, 12px);
     padding: clamp(10px, 3vmin, 24px);
     box-sizing: border-box;
-    color: #000000;
     overflow-y: auto;
     scrollbar-width: thin;
     scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
@@ -261,40 +230,31 @@ body {
 }
 
 .modal-text {
-    font-size: clamp(9px, 1.8vmin, 12px);
+    font-size: clamp(12px, 3.8vmin, 18px);
     line-height: 1.3;
     margin: 0;
     text-align: left;
 }
 
 /* ///////////// */
-/* Defeat Modal Dialog */
+/* Small Modal Dialog */
 /* ///////////// */
 
-/* Модификатор для маленького окна (410х410px в оригинале). 
-   Используем пропорциональный clamp от твоих 60vmin */
 .modal-dialog-box.small-dialog {
-    width: clamp(260px, 52vmin, 410px);
-    height: clamp(260px, 52vmin, 410px);
+    width: clamp(205px, 50vmin, 820px) !important;
+    height: clamp(205px, 50vmin, 820px) !important;
     background-image: url("/interface_background/small_dialog_background.png");
 }
 
-/* Контейнер для контента внутри диалога поражения */
-.modal-dialog-content {
+.small-modal-dialog-content {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 85%;
-    height: 85%;
+    width: clamp(205px, 50vmin, 820px) !important;
+    height: clamp(205px, 50vmin, 820px) !important;
     box-sizing: border-box;
-    padding: clamp(10px, 2vmin, 20px);
-}
-
-.defeat-desc {
-    max-width: 80%;
-    line-height: 1.3;
-    margin: 4px 0 0 0;
+    padding: clamp(10px, 5vmin, 100px);
 }
 
 /* /////// */
@@ -306,99 +266,9 @@ body {
     justify-content: center;
     align-items: center;
     gap: clamp(8px, 2vmin, 16px);
-    margin-top: clamp(10px, 2vmin, 40px);
     width: 100%;
 }
 
-.clickable-button {
-    cursor: pointer;
-    transition: transform 0.1s ease;
-    max-width: 70%;
-    width: clamp(150px, 30vmin, 219px) !important;
-    height: clamp(28px, 5.5vmin, 40px) !important;
-    object-fit: contain;
-}
-
-.clickable-button:hover {
-    transform: scale(1.02);
-}
-
-.clickable-button:active {
-    transform: scale(0.98);
-}
-
-.btn-ok {
-    width: clamp(35px, 5vmin, 41px);
-    height: clamp(34px, 5vmin, 40px);
-    max-width: none;
-    margin-top: clamp(6px, 1.5vmin, 12px);
-    flex-shrink: 0;
-}
-
-/* //////////////////// */
-/* Cascaded Cards (Tableau) */
-/* //////////////////// */
-
-/* Контейнер для карты в каскаде */
-.cascaded-card-container {
-    position: relative;
-    /* Переиспользуем твои адаптивные размеры карт */
-    width: clamp(35px, 6vmin, 45px);
-
-    /* Высота контейнера динамически увеличивается, чтобы нижние карты не обрезались 
-       Твои оригинальные 2.8px — это примерно 6% от высоты карты (61px). 
-       Поэтому шаг сдвига делаем равным 6% от текущей адаптивной высоты карты. */
-    height: calc(clamp(47px, 8.13vmin, 61px) + (clamp(47px, 8.13vmin, 61px) * 0.06 * var(--card-index)));
-}
-
-/* Все слои карты внутри каскада */
-.cascaded-card-layer {
-    position: absolute;
-    /* Каждая следующая карта сдвигается вниз на 6% от своей высоты помноженное на её индекс */
-    top: calc(clamp(47px, 8.13vmin, 61px) * 0.06 * var(--card-index));
-    left: 0;
-    width: 100%;
-    height: clamp(47px, 8.13vmin, 61px);
-    /* Фиксированная адаптивная высота самой карты */
-    object-fit: contain;
-    z-index: calc(4 + var(--card-index));
-    /* Каждая следующая карта ложится ПОВЕРХ предыдущей */
-}
-
-/* Иконка уровня для каскадной карты */
-.cascaded-card-layer.cascaded-card-level {
-    width: 22%;
-    height: 10%;
-    /* Сдвиг уровня делаем ТОП + внутренний отступ, чтобы он не улетал вверх к первой карте */
-    top: calc(calc(clamp(47px, 8.13vmin, 61px) * 0.06 * var(--card-index)) + 4%);
-    left: 4%;
-    z-index: calc(5 + var(--card-index));
-}
-
-/* /////////////////// */
-/* Exit Confirm Dialog */
-/* /////////////////// */
-
-/* Распределяем текст и кнопки по высоте внутри окна (аналог 'space-between') */
-.modal-dialog-content.space-between-layout {
-    justify-content: space-between;
-    padding: clamp(15px, 4vmin, 30px) 0;
-    /* Ограничиваем внутренние отступы */
-}
-
-/* Текст предупреждения с адаптивным шрифтом, зажатый в ширину */
-.modal-confirm-text {
-    color: #000000;
-    font-size: clamp(12px, 2.5vmin, 16px);
-    font-weight: 500;
-    line-height: 1.4;
-    text-align: center;
-    max-width: 80%;
-    margin: 0;
-    user-select: none;
-}
-
-/* Контейнер для двух кнопок */
 .modal-action-buttons {
     display: flex;
     flex-direction: column;
@@ -407,83 +277,12 @@ body {
     width: 100%;
 }
 
-/* Сами кнопки действий — адаптируются по vmin и забирают ховеры из .clickable-button */
-.btn-exit-action {
-    width: clamp(150px, 30vmin, 219px) !important;
-    height: clamp(28px, 5.5vmin, 40px) !important;
+.btn-seed-digit {
+    width: clamp(20px, 6vmin, 80px) !important;
+    height: auto !important;
     max-width: none !important;
-    /* Убираем дефолтный лимит в 45% */
 }
 
-/* //////////////////// */
-/* Seed Selection Screen */
-/* //////////////////// */
-
-/* Экранный контейнер на весь дисплей */
-.screen-full-container {
-    position: relative;
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-}
-
-/* Задний фон */
-.screen-bg-image {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    z-index: 1;
-}
-
-/* Модификатор подложки для окна сида (было 420x420px) */
-.modal-dialog-box.seed-dialog {
-    width: clamp(280px, 55vmin, 420px);
-    height: clamp(280px, 55vmin, 420px);
-    background-image: url("/interface_background/dialog_background1.png");
-    z-index: 2;
-}
-
-/* Специфичные отступы внутри окна сида */
-.seed-content-layout {
-    justify-content: center;
-    gap: clamp(6px, 1.5vmin, 12px);
-    padding: clamp(12px, 3vmin, 24px) 0;
-}
-
-/* Кнопка назад в левом верхнем углу окна */
-.btn-back-top-left {
-    position: absolute;
-    top: clamp(8px, 2vmin, 16px);
-    left: clamp(8px, 2vmin, 16px);
-    width: clamp(25px, 5vmin, 40px) !important;
-    height: clamp(25px, 5vmin, 40px) !important;
-    max-width: none !important;
-    z-index: 10;
-}
-
-/* Предупреждающий текст (зажат по ширине, как оригинальные 310px контента) */
-.seed-warning-text {
-    max-width: 85%;
-    color: #000000;
-    line-height: 1.3;
-    margin: 0;
-}
-
-/* Вывод цифр сида (с адаптивным трекингом/letter-spacing) */
-.seed-display-value {
-    font-size: clamp(16px, 3.5vmin, 24px);
-    color: #000000;
-    letter-spacing: clamp(4px, 1vmin, 8px);
-    margin: 4px 0;
-    text-align: center;
-}
-
-/* Ряды кнопок калькулятора */
 .seed-buttons-row {
     display: flex;
     justify-content: center;
@@ -491,98 +290,72 @@ body {
     width: 100%;
 }
 
-/* Сами кнопочки цифр (были 40х40px) */
-.btn-seed-digit {
-    width: clamp(26px, 5.2vmin, 40px) !important;
-    height: clamp(26px, 5.2vmin, 40px) !important;
+.btn-back-top-left,
+.btn-back-top-right,
+.clickable-button,
+.clickable-button-medium,
+.clickable-button-small {
+    cursor: pointer;
+    transition: transform 0.1s ease;
+    object-fit: contain;
+    height: auto !important;
+}
+
+.btn-back-top-left,
+.btn-back-top-right,
+.clickable-button:hover,
+.clickable-button-medium:hover,
+.clickable-button-small:hover {
+    transform: scale(1.2);
+}
+
+.btn-back-top-left,
+.btn-back-top-right,
+.clickable-button:active,
+.clickable-button-medium:active,
+.clickable-button-small:active {
+    transform: scale(0.8);
+}
+
+.clickable-button {
+    width: clamp(100px, 40vmin, 656px) !important;
+    height: auto !important;
+}
+
+.clickable-button-medium {
+    width: clamp(50px, 30vmin, 656px) !important;
+    height: auto !important;
+}
+
+.clickable-button-small {
+    width: clamp(20px, 5vmin, 80px) !important;
+    height: auto !important;
+}
+
+.btn-back-top-left {
+    position: absolute;
+    top: clamp(8px, 2vmin, 16px);
+    left: clamp(8px, 2vmin, 16px);
+    width: clamp(25px, 8vmin, 100px) !important;
+    height: clamp(25px, 8vmin, 100px) !important;
     max-width: none !important;
+    z-index: 10;
 }
 
-/* Кнопка Старт (была 137х40px) */
-.btn-seed-start {
-    width: clamp(100px, 18vmin, 137px) !important;
-    height: clamp(28px, 5.5vmin, 40px) !important;
+.btn-back-top-right {
+    position: absolute;
+    top: clamp(8px, 2vmin, 16px);
+    right: clamp(8px, 2vmin, 16px);
+    width: clamp(25px, 8vmin, 100px) !important;
+    height: clamp(25px, 8vmin, 100px) !important;
     max-width: none !important;
-    margin-top: clamp(4px, 1vmin, 10px);
-}
-
-/* /////////////////// */
-/* Play Menu Screen    */
-/* /////////////////// */
-
-/* Модификатор подложки для большого окна (dialog_background2.png) */
-.modal-dialog-box.large-dialog {
-    /* Делаем его чуть крупнее, чем малый диалог (например, пропорционально 500х500px в пиках) */
-    width: clamp(320px, 65vmin, 500px);
-    height: clamp(320px, 65vmin, 500px);
-    background-image: url("/interface_background/dialog_background2.png");
-    z-index: 2;
-}
-
-/* Центрирование и распределение элементов внутри игрового меню */
-.play-menu-content {
-    justify-content: center;
-    gap: clamp(20px, 5vmin, 40px);
-    /* Хороший адаптивный отступ между текстом и кнопками */
-    padding: clamp(20px, 4vmin, 40px) 0;
-}
-
-/* Описание (зажимаем по ширине, чтобы текст красиво ложился в свиток) */
-.play-menu-desc {
-    max-width: 80%;
-    color: #000000;
-    line-height: 1.4;
-    margin: 0;
-}
-
-/* Кнопки действий (b_generate_using_game_seed и b_start_random_game) */
-.btn-play-action {
-    /* Поскольку картинки кнопок длинные, даем им адекватный clamp */
-    width: clamp(200px, 42vmin, 290px) !important;
-    height: clamp(32px, 6.5vmin, 46px) !important;
-    max-width: none !important;
-    /* Убираем лимит в 45% */
-}
-
-/* ///////////// */
-/* Subpost Page  */
-/* ///////////// */
-
-/* Специфические фиксы для контента челленджей */
-.challenge-desc-fix {
-    max-width: 85%;
-    line-height: 1.35;
-    margin: 0;
-}
-
-/* Статистика побед/поражений (уменьшаем отступ, чтобы не прижималось к кнопке) */
-.stats-row.challenge-stats {
-    gap: clamp(10px, 2.5vmin, 20px);
-    margin: 4px 0;
-}
-
-/* Кнопка «Принять вызов» (была жестко 247х40px) */
-.btn-challenge-enter {
-    width: clamp(180px, 38vmin, 247px) !important;
-    height: clamp(30px, 6vmin, 40px) !important;
-    max-width: none !important;
-}
-
-/* Утилиты микро-отступов для дефолтного кейса */
-.gap-micro {
-    gap: 2px !important;
-}
-
-.score-highlight {
-    margin: 2px 0;
-    text-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1);
+    z-index: 10;
 }
 
 /* /////////////////// */
 /* Game Play Screen    */
 /* /////////////////// */
 
-/* Полноэкранная обертка игрового поля */
 .game-screen-wrapper {
     width: 100vw;
     height: 100vh;
@@ -590,113 +363,162 @@ body {
     align-items: center;
     justify-content: center;
     position: relative;
-    background-image: url('/game_background.png');
+    background-image: url('/background.png');
     background-size: cover;
     background-position: center;
     overflow: hidden;
 }
 
-/* Внутренний контейнер с безопасными отступами */
 .game-inner-container {
-    width: 98%;
-    height: 98%;
+    width: 100%;
+    height: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: clamp(4px, 1vmin, 12px);
 }
 
-/* Верхняя плашка управления (заменяем фиксированные 70px на clamp) */
 .game-top-bar {
     width: 100%;
-    height: clamp(50px, 10vmin, 75px);
+    height: clamp(34.5px, 12vmin, 200px) !important;
     display: flex;
     align-items: center;
     justify-content: space-between;
     position: relative;
 }
 
-/* Кнопки Назад и Помощь на панели */
-.btn-bar-action {
-    width: clamp(30px, 6.5vmin, 44px) !important;
-    height: clamp(30px, 6.5vmin, 44px) !important;
-    max-width: none !important;
-    z-index: 5;
-}
-
-/* Центральный информационный блок */
 .game-info-plate {
     position: absolute;
+    top: 0;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
 }
 
 .info-plate-bg {
-    width: clamp(100px, 22vmin, 140px);
-    height: auto;
+    position: absolute;
+    top: clamp(8px, 2vmin, 16px);
+    width: clamp(82.5px, 20vmin, 264px) !important;
+    height: auto !important;
+    max-width: none !important;
     object-fit: contain;
 }
 
 .info-plate-content {
     position: absolute;
+    top: clamp(8px, 3.5vmin, 64px);
+    width: clamp(82.5px, 20vmin, 264px) !important;
+    height: auto !important;
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 85%;
 }
 
-.info-text {
-    font-size: clamp(10px, 2vmin, 13px);
-    color: #000000;
-    user-select: none;
-    line-height: 1.2;
-    text-align: center;
+.slots-background-wrapper {
+    width: 100%;
+    height: clamp(80px, 10vmin, 180px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-image: url('/slots_background.png');
+    background-position: center;
+    background-repeat: repeat-x;
+    background-size: contain;
 }
 
-/* Ряд свободных и базовых ячеек (заменяем 80px на проценты/vmin) */
+/* A row of empty and basic cells */
 .slots-grid-row {
     width: 100%;
-    height: clamp(65px, 13vmin, 90px);
+    height: clamp(80px, 14vmin, 180px);
+    margin-left: auto;
+    margin-right: auto;
     display: grid;
-    /* У фриселлов 4 ячейки + 4 под фундамент = 8 равных колонок */
-    grid-template-columns: repeat(8, 1fr);
+    grid-template-columns: repeat(8, minmax(0, 1fr));
     gap: clamp(2px, 0.8vmin, 6px);
+    align-items: center;
+    justify-items: center;
 }
 
 .slot-cell-trigger {
-    width: 100%;
-    height: 100%;
+    position: relative;
+    width: clamp(35px, 12vmin, 90px) !important;
+    height: clamp(47px, 16.26vmin, 102px) !important;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    margin: 0 auto;
 }
 
-/* Игровая зона с основными стопками карт */
+.game-card-column {
+    /* width: 100%;
+    position: relative;
+    display: block; */
+
+    width: 100%;
+    height: 100%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    background-color: transparent;
+}
+
+/* Move each subsequent card down by a fraction of its height. 
+22% of the card's height is the ideal amount to move in solitaire so that the index and suit are visible */
+.game-card-column .slot-cell-trigger {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: calc(var(--card-index) * clamp(12px, 3.8vmin, 24px));
+    z-index: calc(10 + var(--card-index));
+}
+
+/* The playing area with the main card piles */
 .columns-grid-area {
     width: 100%;
     flex: 1;
     display: grid;
-    /* В пасьянсе Свободная ячейка ровно 8 вертикальных игровых колонок */
     grid-template-columns: repeat(8, 1fr);
     gap: clamp(2px, 0.8vmin, 6px);
     align-items: flex-start;
     justify-content: center;
-    overflow-y: auto;
-    /* Если стопка карт станет гигантской, поле не сломается */
+    margin-top: clamp(10px, 3vmin, 30px);
 }
 
-/* Вертикальная колонка для карт */
-.game-card-column {
+/* ///////////// */
+/* Card Elements */
+/* ///////////// */
+
+.card-container {
+    position: relative;
+    width: clamp(35px, 12vmin, 90px) !important;
+    height: clamp(47px, 16.26vmin, 102px) !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.card-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    cursor: pointer;
-    position: relative;
+    object-fit: contain;
+    pointer-events: none;
+}
+
+.card-layer.card-level {
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -16%);
+    width: 25% !important;
+    height: auto !important;
+    z-index: calc(100 + var(--card-index));
 }

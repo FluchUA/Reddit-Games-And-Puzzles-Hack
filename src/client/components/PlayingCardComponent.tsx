@@ -6,35 +6,18 @@ interface PlayingCardProps {
 }
 
 export function PlayingCardComponent({ card, cardIndex }: PlayingCardProps) {
-  // cardIndex — это порядковый номер карты в колонке (0, 1, 2, 3...)
   const cardStyle = { '--card-index': cardIndex } as React.CSSProperties;
 
   return (
-    /* Передаем индекс карты внутрь CSS через style, остальное сделает класс */
-    <div className="cascaded-card-container" style={cardStyle}>
+    <div className="slot-cell-trigger" style={cardStyle}>
+      {/* Card */}
+      <img src={`/${card.assetPath}`} alt={`${card.rank} of ${card.suit}`} className="card-layer" />
 
-      {/* Карта */}
-      <img
-        src={`/${card.assetPath}`}
-        alt={`${card.rank} of ${card.suit}`}
-        className="cascaded-card-layer"
-      />
+      {/* Card level */}
+      <img src={`/${card.cardLvlPath}`} alt="Card level" className="card-layer card-level" />
 
-      {/* Уровень карты */}
-      <img
-        src={`/${card.cardLvlPath}`}
-        alt="Card level"
-        className="cascaded-card-layer cascaded-card-level"
-      />
-
-      {/* Выделение карты */}
-      {card.isSelected && (
-        <img
-          src="/cards/selected_card.png"
-          alt="Selected card overlay"
-          className="cascaded-card-layer"
-        />
-      )}
+      {/* Card Selection */}
+      {card.isSelected && (<img src="/cards/selected_card.png" alt="Selected card overlay" className="card-layer" />)}
     </div>
   );
 }

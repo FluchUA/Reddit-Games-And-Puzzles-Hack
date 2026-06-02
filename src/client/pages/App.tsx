@@ -169,6 +169,7 @@ export function App() {
                     onBackToMenu={() => {
                         setScreen(PageType.MainMenu);
                         setRefetchTrigger(prev => prev + 1);
+                        setIsLoading(true);
                     }}
                 />
             )}

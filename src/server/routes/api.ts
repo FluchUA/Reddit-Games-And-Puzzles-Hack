@@ -15,8 +15,7 @@ export const api = new Hono();
 
 /// GET USER
 api.get('/get-user', async (c) => {
-  const body = await c.req.json();
-  const { userId, postId } = body;
+  const { userId, postId } = context;
 
   if (!userId) {
     return c.json<ErrorResponse>(
@@ -164,7 +163,7 @@ api.post('/victory', async (c) => {
   });
 
   const existingGames = await redis.zRange(`completedGames:${userId}`, 0, -1);
-  const updatedGames = [...existingGames, gameSeed];
+  const updatedGames = [...existingGames.map(g => g.member), gameSeed];
   await redis.del(`completedGames:${userId}`);
   const members = updatedGames.map((game, index) => ({ score: index, member: game }));
   await redis.zAdd(`completedGames:${userId}`, ...members);
@@ -182,7 +181,7 @@ api.post('/victory', async (c) => {
     });
 
     const existingWon = await redis.zRange(`wonSubposts:${userId}`, 0, -1);
-    const updatedWon = [...existingWon, subpostID];
+    const updatedWon = [...existingWon.map(g => g.member), subpostID];
     await redis.del(`wonSubposts:${userId}`);
     const wonMembers = updatedWon.map((game, index) => ({ score: index, member: game }));
     await redis.zAdd(`wonSubposts:${userId}`, ...wonMembers);

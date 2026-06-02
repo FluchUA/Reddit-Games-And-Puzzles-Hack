@@ -38,7 +38,7 @@ export function DefeatDialogComponent({ onDialogClose, totalTime, user, postData
             <div className="modal-dialog-box small-dialog">
 
                 {/* Content */}
-                <div className="modal-dialog-content">
+                <div className="small-modal-dialog-content">
 
                     {/*Title */}
                     <h2 className="text-xlarge bold-text"> Defeat +{DEFEAT_XP_VALUE}XP </h2>
@@ -61,12 +61,12 @@ export function DefeatDialogComponent({ onDialogClose, totalTime, user, postData
                     </p>
 
                     {/* OK Button */}
-                    <img src="/buttons/b_ok.png" alt="Ok" className="clickable-button btn-ok" onClick={onDialogClose} />
+                    <img src="/buttons/b_ok.png" alt="Ok" className="clickable-button-small margin-top-small" onClick={onDialogClose} />
                 </div>
             </div>
 
             {/* Spinner */}
-            {loading && <LoadingComponent isShowBackgroundImage={true} />}
+            {loading && <LoadingComponent isShowBackgroundImage={false} />}
         </div>
     );
 }

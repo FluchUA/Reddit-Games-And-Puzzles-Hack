@@ -50,20 +50,20 @@ export function CreateGameBySeedPage({ onBackToMenu, onStartGame }: CreateGameBy
 
                 {/* Buttons: 1-6 */}
                 <div className="seed-buttons-row">
-                    {[1, 2, 3, 4, 5, 6].map(n => (<img key={n} src={`/buttons/b_${n}.png`} alt={`Button ${n}`} className="clickable-button" onClick={() => onNumberPressed(n)} />))}
+                    {[1, 2, 3, 4, 5, 6].map(n => (<img key={n} src={`/buttons/b_${n}.png`} alt={`Button ${n}`} className="btn-seed-digit" onClick={() => onNumberPressed(n)} />))}
                 </div>
 
                 {/* Buttons: clear, 7-9, 0, reset */}
                 <div className="seed-buttons-row">
-                    <img src="/buttons/b_clear.png" alt="Clear" className="clickable-button" onClick={onCancelPressed} />
+                    <img src="/buttons/b_clear.png" alt="Clear" className="btn-seed-digit" onClick={onCancelPressed} />
 
-                    {[7, 8, 9, 0].map(n => (<img key={n} src={`/buttons/b_${n}.png`} alt={`Button ${n}`} className="clickable-button" onClick={() => onNumberPressed(n)} />))}
+                    {[7, 8, 9, 0].map(n => (<img key={n} src={`/buttons/b_${n}.png`} alt={`Button ${n}`} className="btn-seed-digit" onClick={() => onNumberPressed(n)} />))}
 
-                    <img src="/buttons/b_X.png" alt="Reset" className="clickable-button" onClick={onResetPressed} />
+                    <img src="/buttons/b_X.png" alt="Reset" className="btn-seed-digit" onClick={onResetPressed} />
                 </div>
 
                 {/* Start Button */}
-                <img src="/buttons/b_start_game.png" alt="Start Game" className="clickable-button" onClick={() => onStartGame(seed)} />
+                <img src="/buttons/b_start_game.png" alt="Start Game" className="clickable-button-medium" onClick={() => onStartGame(seed)} />
             </div>
         </div>
     );

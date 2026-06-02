@@ -26,10 +26,10 @@ export function RulesDialogComponent({ onDialogClose }: RulesDialogProps) {
                     <p className="modal-text">
                         The goal of the game is to move all the cards from the columns and free cells to the foundation piles. The game is won when all cards are sorted into their respective suits.
                     </p>
-
-                    {/* Button */}
-                    <img src="/buttons/b_ok.png" alt="Ok button" className="clickable-button btn-ok" onClick={onDialogClose} />
                 </div>
+
+                {/* Button */}
+                <img src="/buttons/b_ok.png" alt="Ok button" className="clickable-button-small margin-top-small" onClick={onDialogClose} />
             </div>
         </div>
     );

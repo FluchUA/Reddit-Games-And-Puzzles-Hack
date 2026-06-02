@@ -18,9 +18,9 @@ export function SubpostPage({ user, postData, onStartGame }: SubpostPageProps) {
         if (user.id === postData.userID) {
             return (
                 <>
-                    <p className="text-xxlarge bold-text text-center text-black">Your result: {formatTime(Number(postData.totalTime))}</p>
-                    <p className="text-medium bold-text text-center text-black">You've already challenged others to beat it!</p>
-                    <p className="text-small text-center text-black margin-bottom-small">Now sit back and see if anyone can rise to the challenge.</p>
+                    <p className="text-xxlarge bold-text text-center">Your result: {formatTime(Number(postData.totalTime))}</p>
+                    <p className="text-medium bold-text text-center">You've already challenged others to beat it!</p>
+                    <p className="text-small text-center margin-bottom-small">Now sit back and see if anyone can rise to the challenge.</p>
                 </>
             );
         }
@@ -29,9 +29,9 @@ export function SubpostPage({ user, postData, onStartGame }: SubpostPageProps) {
         if (user.wonSubposts.includes(subpostID)) {
             return (
                 <>
-                    <h2 className="text-xxlarge bold-text text-center text-black">Congratulations!</h2>
-                    <p className="text-medium text-center text-black">You've conquered this challenge and claimed victory. See you in the next challenge!</p>
-                    <p className="text-medium bold-text text-center text-black margin-top-small">Received +300XP +1 card level upgrade</p>
+                    <h2 className="text-xxlarge bold-text text-center">Congratulations!</h2>
+                    <p className="text-medium text-center">You've conquered this challenge and claimed victory. See you in the next challenge!</p>
+                    <p className="text-medium bold-text text-center margin-top-small">Received +300XP +1 card level upgrade</p>
                 </>
             );
         }
@@ -39,7 +39,7 @@ export function SubpostPage({ user, postData, onStartGame }: SubpostPageProps) {
         // The player has already failed this challenge
         if (user.lostSubposts.includes(subpostID)) {
             return (
-                <p className="text-xlarge bold-text text-center text-black margin-bottom-small">
+                <p className="text-xlarge bold-text text-center margin-bottom-small">
                     Unfortunately, you didn't win this time, but don't give up! Learn from this and come back stronger—you've got what it takes to succeed!
                 </p>
             );
@@ -48,11 +48,10 @@ export function SubpostPage({ user, postData, onStartGame }: SubpostPageProps) {
         // Default (new player)
         return (
             <>
-                <p className="text-xxlarge bold-text text-center text-black">Player {postData.ownerInfoString}LVL</p>
-                <p className="text-xxlarge bold-text text-center text-black">has set a new time record!</p>
-                <p className="text-xxlarge bold-text text-center text-black">{formatTime(Number(postData.totalTime))}</p>
-                <p className="text-xlarge text-center text-black">Think you can beat it?</p>
-                <p className="text-medium text-center text-black margin-bottom-small">Finish the game faster to earn XP and gain +1 upgrade to your card level</p>
+                <p className="text-xxlarge bold-text text-center">Player {postData.ownerInfoString}LVL</p>
+                <p className="text-xlarge bold-text text-center">has set a new time record - {formatTime(Number(postData.totalTime))}</p>
+                <p className="text-xlarge text-center">Think you can beat it?</p>
+                <p className="text-medium text-center margin-bottom-small">Finish the game faster to earn XP and gain +1 upgrade to your card level</p>
             </>
         );
     };
@@ -72,7 +71,7 @@ export function SubpostPage({ user, postData, onStartGame }: SubpostPageProps) {
                 {renderContent()}
 
                 {/* Win/loss record for this subpost */}
-                <div className="stats-row text-small text-black  margin-bottom-small">
+                <div className="stats-row text-small margin-bottom-small">
                     <span>Winning players: {Number(postData.victoriesNumber)}</span>
                     <span>Defeated Players: {Number(postData.defeatsNumber)}</span>
                 </div>
